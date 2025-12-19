@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import '../../data/datasources/datasources.dart';
-import '../../data/repositories/repositories.dart';
 import '../../domain/entities/entities.dart';
 import '../../domain/usecases/usecases.dart';
 
 class ProductList extends StatefulWidget {
-  const ProductList({super.key});
+  final GetProducts getProducts;
+
+  const ProductList({super.key, required this.getProducts});
 
   @override
   State<ProductList> createState() => _ProductListState();
@@ -23,13 +23,7 @@ class _ProductListState extends State<ProductList> {
   }
 
   Future<void> _loadProducts() async {
-    final remoteDataSource = RemoteDataSourceImpl();
-    final productRepository = ProductRepositoryImpl(
-      remoteDataSource: remoteDataSource,
-    );
-    final getProducts = GetProducts(productRepository);
-
-    final result = await getProducts();
+    final result = await widget.getProducts();
     result.fold(
       (failure) {
         setState(() {

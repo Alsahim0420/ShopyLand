@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import '../../data/datasources/datasources.dart';
-import '../../data/repositories/repositories.dart';
 import '../../domain/entities/entities.dart';
 import '../../domain/usecases/usecases.dart';
 
 class UserList extends StatefulWidget {
-  const UserList({super.key});
+  final GetUsers getUsers;
+
+  const UserList({super.key, required this.getUsers});
 
   @override
   State<UserList> createState() => _UserListState();
@@ -23,13 +23,7 @@ class _UserListState extends State<UserList> {
   }
 
   Future<void> _loadUsers() async {
-    final remoteDataSource = RemoteDataSourceImpl();
-    final userRepository = UserRepositoryImpl(
-      remoteDataSource: remoteDataSource,
-    );
-    final getUsers = GetUsers(userRepository);
-
-    final result = await getUsers();
+    final result = await widget.getUsers();
     result.fold(
       (failure) {
         setState(() {

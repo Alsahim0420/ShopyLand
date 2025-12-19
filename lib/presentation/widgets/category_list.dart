@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import '../../data/datasources/datasources.dart';
-import '../../data/repositories/repositories.dart';
 import '../../domain/entities/entities.dart';
 import '../../domain/usecases/usecases.dart';
 
 class CategoryList extends StatefulWidget {
-  const CategoryList({super.key});
+  final GetCategories getCategories;
+
+  const CategoryList({super.key, required this.getCategories});
 
   @override
   State<CategoryList> createState() => _CategoryListState();
@@ -23,13 +23,7 @@ class _CategoryListState extends State<CategoryList> {
   }
 
   Future<void> _loadCategories() async {
-    final remoteDataSource = RemoteDataSourceImpl();
-    final categoryRepository = CategoryRepositoryImpl(
-      remoteDataSource: remoteDataSource,
-    );
-    final getCategories = GetCategories(categoryRepository);
-
-    final result = await getCategories();
+    final result = await widget.getCategories();
     result.fold(
       (failure) {
         setState(() {
