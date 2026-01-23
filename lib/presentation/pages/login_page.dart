@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pablito_ds/pablito_ds.dart';
 import '../../core/auth/auth_service.dart';
 
 class LoginPage extends StatefulWidget {
@@ -81,6 +82,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -96,13 +98,13 @@ class _LoginPageState extends State<LoginPage> {
                   width: 100,
                   height: 100,
                   decoration: BoxDecoration(
-                    color: Colors.pink[50],
+                    color: DesignTokens.primary.withValues(alpha: 0.10),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.shopping_bag,
                     size: 50,
-                    color: Colors.pink,
+                    color: cs.primary,
                   ),
                 ),
                 const SizedBox(height: 40),
@@ -126,18 +128,12 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 40),
                 // Email field
-                TextFormField(
+                TextInput(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
-                    labelText: 'Email Address',
-                    prefixIcon: const Icon(Icons.email_outlined),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    filled: true,
-                    fillColor: Colors.grey[50],
-                  ),
+                  label: 'Email Address',
+                  hint: 'you@example.com',
+                  prefixIcon: Icons.email_outlined,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Por favor ingresa tu email';
@@ -150,30 +146,19 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 20),
                 // Password field
-                TextFormField(
+                TextInput(
                   controller: _passwordController,
                   obscureText: _obscurePassword,
-                  decoration: InputDecoration(
-                    labelText: 'Password',
-                    prefixIcon: const Icon(Icons.lock_outlined),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscurePassword
-                            ? Icons.visibility_outlined
-                            : Icons.visibility_off_outlined,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _obscurePassword = !_obscurePassword;
-                        });
-                      },
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    filled: true,
-                    fillColor: Colors.grey[50],
-                  ),
+                  label: 'Password',
+                  prefixIcon: Icons.lock_outlined,
+                  suffixIcon: _obscurePassword
+                      ? Icons.visibility_outlined
+                      : Icons.visibility_off_outlined,
+                  onSuffixIconTap: () {
+                    setState(() {
+                      _obscurePassword = !_obscurePassword;
+                    });
+                  },
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Por favor ingresa tu contraseña';
@@ -195,7 +180,6 @@ class _LoginPageState extends State<LoginPage> {
                     },
                     child: const Text(
                       'Forgot Password?',
-                      style: TextStyle(color: Colors.pink),
                     ),
                   ),
                 ),
@@ -224,34 +208,11 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 if (_errorMessage != null) const SizedBox(height: 20),
                 // Login button
-                ElevatedButton(
-                  onPressed: _isLoading ? null : _login,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.pink,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: _isLoading
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              Colors.white,
-                            ),
-                          ),
-                        )
-                      : const Text(
-                          'Log In',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                PrimaryButton(
+                  label: 'Log In',
+                  isFullWidth: true,
+                  isLoading: _isLoading,
+                  onPressed: _login,
                 ),
                 const SizedBox(height: 20),
                 // Divider
@@ -270,18 +231,12 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 20),
                 // Demo login button
-                OutlinedButton.icon(
-                  onPressed: _isLoading ? null : _loginWithDemo,
-                  icon: const Icon(Icons.play_arrow),
-                  label: const Text('Login with Demo Account'),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.pink,
-                    side: const BorderSide(color: Colors.pink),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
+                SecondaryButton(
+                  label: 'Login with Demo Account',
+                  icon: Icons.play_arrow,
+                  isFullWidth: true,
+                  isLoading: _isLoading,
+                  onPressed: _loginWithDemo,
                 ),
                 const SizedBox(height: 30),
                 // Sign up
@@ -299,7 +254,6 @@ class _LoginPageState extends State<LoginPage> {
                       child: const Text(
                         'Sign Up',
                         style: TextStyle(
-                          color: Colors.pink,
                           fontWeight: FontWeight.bold,
                         ),
                       ),

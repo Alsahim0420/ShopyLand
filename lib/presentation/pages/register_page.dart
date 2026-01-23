@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pablito_ds/pablito_ds.dart';
 import '../../core/auth/auth_service.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -71,6 +72,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -86,13 +88,13 @@ class _RegisterPageState extends State<RegisterPage> {
                   width: 100,
                   height: 100,
                   decoration: BoxDecoration(
-                    color: Colors.pink[50],
+                    color: DesignTokens.primary.withValues(alpha: 0.10),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.person_add,
                     size: 50,
-                    color: Colors.pink,
+                    color: cs.primary,
                   ),
                 ),
                 const SizedBox(height: 40),
@@ -116,18 +118,12 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
                 const SizedBox(height: 40),
                 // Name field
-                TextFormField(
+                TextInput(
                   controller: _nameController,
                   keyboardType: TextInputType.name,
-                  decoration: InputDecoration(
-                    labelText: 'Full Name',
-                    prefixIcon: const Icon(Icons.person_outlined),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    filled: true,
-                    fillColor: Colors.grey[50],
-                  ),
+                  label: 'Full Name',
+                  hint: 'Tu nombre',
+                  prefixIcon: Icons.person_outlined,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Por favor ingresa tu nombre';
@@ -137,18 +133,12 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
                 const SizedBox(height: 20),
                 // Email field
-                TextFormField(
+                TextInput(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
-                    labelText: 'Email Address',
-                    prefixIcon: const Icon(Icons.email_outlined),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    filled: true,
-                    fillColor: Colors.grey[50],
-                  ),
+                  label: 'Email Address',
+                  hint: 'you@example.com',
+                  prefixIcon: Icons.email_outlined,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Por favor ingresa tu email';
@@ -161,30 +151,19 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
                 const SizedBox(height: 20),
                 // Password field
-                TextFormField(
+                TextInput(
                   controller: _passwordController,
                   obscureText: _obscurePassword,
-                  decoration: InputDecoration(
-                    labelText: 'Password',
-                    prefixIcon: const Icon(Icons.lock_outlined),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscurePassword
-                            ? Icons.visibility_outlined
-                            : Icons.visibility_off_outlined,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _obscurePassword = !_obscurePassword;
-                        });
-                      },
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    filled: true,
-                    fillColor: Colors.grey[50],
-                  ),
+                  label: 'Password',
+                  prefixIcon: Icons.lock_outlined,
+                  suffixIcon: _obscurePassword
+                      ? Icons.visibility_outlined
+                      : Icons.visibility_off_outlined,
+                  onSuffixIconTap: () {
+                    setState(() {
+                      _obscurePassword = !_obscurePassword;
+                    });
+                  },
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Por favor ingresa tu contraseña';
@@ -197,30 +176,19 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
                 const SizedBox(height: 20),
                 // Confirm Password field
-                TextFormField(
+                TextInput(
                   controller: _confirmPasswordController,
                   obscureText: _obscureConfirmPassword,
-                  decoration: InputDecoration(
-                    labelText: 'Confirm Password',
-                    prefixIcon: const Icon(Icons.lock_outlined),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscureConfirmPassword
-                            ? Icons.visibility_outlined
-                            : Icons.visibility_off_outlined,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _obscureConfirmPassword = !_obscureConfirmPassword;
-                        });
-                      },
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    filled: true,
-                    fillColor: Colors.grey[50],
-                  ),
+                  label: 'Confirm Password',
+                  prefixIcon: Icons.lock_outlined,
+                  suffixIcon: _obscureConfirmPassword
+                      ? Icons.visibility_outlined
+                      : Icons.visibility_off_outlined,
+                  onSuffixIconTap: () {
+                    setState(() {
+                      _obscureConfirmPassword = !_obscureConfirmPassword;
+                    });
+                  },
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Por favor confirma tu contraseña';
@@ -256,34 +224,11 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                 if (_errorMessage != null) const SizedBox(height: 20),
                 // Register button
-                ElevatedButton(
-                  onPressed: _isLoading ? null : _register,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.pink,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: _isLoading
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              Colors.white,
-                            ),
-                          ),
-                        )
-                      : const Text(
-                          'Sign Up',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                PrimaryButton(
+                  label: 'Sign Up',
+                  isFullWidth: true,
+                  isLoading: _isLoading,
+                  onPressed: _register,
                 ),
                 const SizedBox(height: 20),
                 // Divider
@@ -305,7 +250,10 @@ class _RegisterPageState extends State<RegisterPage> {
                 Row(
                   children: [
                     Expanded(
-                      child: OutlinedButton.icon(
+                      child: SecondaryButton(
+                        label: 'Google',
+                        icon: Icons.g_mobiledata,
+                        isFullWidth: true,
                         onPressed: () {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
@@ -313,19 +261,14 @@ class _RegisterPageState extends State<RegisterPage> {
                             ),
                           );
                         },
-                        icon: const Icon(Icons.g_mobiledata),
-                        label: const Text('Google'),
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: OutlinedButton.icon(
+                      child: SecondaryButton(
+                        label: 'Apple',
+                        icon: Icons.apple,
+                        isFullWidth: true,
                         onPressed: () {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
@@ -333,14 +276,6 @@ class _RegisterPageState extends State<RegisterPage> {
                             ),
                           );
                         },
-                        icon: const Icon(Icons.apple),
-                        label: const Text('Apple'),
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
                       ),
                     ),
                   ],
@@ -361,7 +296,6 @@ class _RegisterPageState extends State<RegisterPage> {
                       child: const Text(
                         'Log In',
                         style: TextStyle(
-                          color: Colors.pink,
                           fontWeight: FontWeight.bold,
                         ),
                       ),

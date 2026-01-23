@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pablito_ds/pablito_ds.dart';
 import '../../core/di/injection_container.dart';
 import '../../core/services/cart_service.dart';
 import '../../domain/entities/entities.dart';
@@ -147,13 +148,17 @@ class _SearchPageState extends State<SearchPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.error_outline, size: 64, color: Colors.red),
-          const SizedBox(height: 16),
-          Text(_errorMessage!),
-          const SizedBox(height: 16),
-          ElevatedButton(
+          const Icon(Icons.error_outline, size: 64, color: DesignTokens.error),
+          const SizedBox(height: DesignTokens.spacingLG),
+          BodyText(
+            text: _errorMessage!,
+            size: BodyTextSize.medium,
+          ),
+          const SizedBox(height: DesignTokens.spacingLG),
+          PrimaryButton(
+            label: 'Reintentar',
+            icon: Icons.refresh,
             onPressed: _loadProducts,
-            child: const Text('Reintentar'),
           ),
         ],
       ),
@@ -202,8 +207,8 @@ class _SearchPageState extends State<SearchPage> {
               return Chip(
                 label: Text(category),
                 onDeleted: null,
-                backgroundColor: Colors.pink[50],
-                labelStyle: const TextStyle(color: Colors.pink),
+                backgroundColor: DesignTokens.primary.withValues(alpha: 0.1),
+                labelStyle: TextStyle(color: DesignTokens.primary),
               );
             }).toList(),
           ),
@@ -250,11 +255,12 @@ class _SearchPageState extends State<SearchPage> {
               style: TextStyle(color: Colors.grey[600]),
             ),
             const SizedBox(height: 24),
-            ElevatedButton(
+            PrimaryButton(
+              label: 'View Categories',
+              icon: Icons.category,
               onPressed: () {
                 Navigator.pushNamed(context, '/discover');
               },
-              child: const Text('View Categories'),
             ),
           ],
         ),

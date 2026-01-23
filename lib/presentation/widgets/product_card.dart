@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pablito_ds/pablito_ds.dart';
 import '../../domain/entities/entities.dart';
 
 class ProductCard extends StatelessWidget {
@@ -13,11 +14,8 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
       child: InkWell(
         onTap: () {
           Navigator.pushNamed(
@@ -132,16 +130,16 @@ class ProductCard extends StatelessWidget {
                     children: [
                       Text(
                         '\$${product.price.toStringAsFixed(2)}',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Colors.pink,
+                          color: cs.primary,
                         ),
                       ),
                       Container(
                         decoration: BoxDecoration(
-                          color: Colors.pink,
-                          borderRadius: BorderRadius.circular(8),
+                          color: cs.primary,
+                          borderRadius: BorderRadius.circular(DesignTokens.radiusSM),
                         ),
                         child: IconButton(
                           icon: const Icon(Icons.add, color: Colors.white),

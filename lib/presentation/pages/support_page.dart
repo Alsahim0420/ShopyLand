@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pablito_ds/pablito_ds.dart';
 
 class SupportPage extends StatefulWidget {
   const SupportPage({super.key});
@@ -48,17 +49,10 @@ class _SupportPageState extends State<SupportPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Search Bar
-            TextField(
+            TextInput(
               controller: _searchController,
-              decoration: InputDecoration(
-                hintText: 'How can we help you?',
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                filled: true,
-                fillColor: Colors.grey[50],
-              ),
+              hint: 'How can we help you?',
+              prefixIcon: Icons.search,
             ),
             const SizedBox(height: 24),
             // FAQ Section
@@ -79,7 +73,7 @@ class _SupportPageState extends State<SupportPage> {
               icon: Icons.chat_bubble_outline,
               title: 'Live Chat',
               subtitle: 'Wait time: < 2 min',
-              color: Colors.pink,
+              color: DesignTokens.primary,
               isAvailable: true,
               onTap: () {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -116,12 +110,12 @@ class _SupportPageState extends State<SupportPage> {
             const SizedBox(height: 24),
             // Priority Support Banner
             Container(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(DesignTokens.spacingLG),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Colors.pink[400]!, Colors.purple[600]!],
+                  colors: [DesignTokens.primary, DesignTokens.secondary],
                 ),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(DesignTokens.radiusLG),
               ),
               child: Row(
                 children: [

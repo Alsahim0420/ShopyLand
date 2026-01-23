@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pablito_ds/pablito_ds.dart' show DesignTheme;
 import 'core/auth/auth_service.dart';
 import 'presentation/pages/login_page.dart';
 import 'presentation/pages/register_page.dart';
@@ -21,32 +22,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'ShopyLand',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.pink,
-          brightness: Brightness.light,
-        ),
-        useMaterial3: true,
-        cardTheme: CardThemeData(
-          elevation: 2,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
-        appBarTheme: const AppBarTheme(
-          centerTitle: false,
-          elevation: 0,
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.pink,
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-        ),
-      ),
+      theme: DesignTheme.lightTheme,
+      darkTheme: DesignTheme.darkTheme,
       initialRoute: authService.isAuthenticated ? '/home' : '/login',
       routes: {
         '/login': (context) => const LoginPage(),

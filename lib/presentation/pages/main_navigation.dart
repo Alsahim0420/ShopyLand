@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pablito_ds/pablito_ds.dart';
 import '../../core/services/cart_service.dart';
 import 'discover_page.dart';
 import 'search_page.dart';
@@ -70,7 +71,7 @@ class _MainNavigationState extends State<MainNavigation> {
           });
         },
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.pink,
+        selectedItemColor: DesignTokens.primary,
         unselectedItemColor: Colors.grey,
         items: [
           const BottomNavigationBarItem(
@@ -91,8 +92,8 @@ class _MainNavigationState extends State<MainNavigation> {
                     top: 0,
                     child: Container(
                       padding: const EdgeInsets.all(2),
-                      decoration: const BoxDecoration(
-                        color: Colors.red,
+                      decoration: BoxDecoration(
+                        color: DesignTokens.error,
                         shape: BoxShape.circle,
                       ),
                       constraints: const BoxConstraints(

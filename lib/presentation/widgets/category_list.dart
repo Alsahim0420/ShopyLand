@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pablito_ds/pablito_ds.dart';
 import '../../domain/entities/entities.dart';
 import '../../domain/usecases/usecases.dart';
 
@@ -82,7 +83,7 @@ class _CategoryListState extends State<CategoryList> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline, size: 64, color: Colors.red),
+            const Icon(Icons.error_outline, size: 64, color: DesignTokens.error),
             const SizedBox(height: 16),
             Text(
               'Error: $errorMessage',
@@ -90,10 +91,10 @@ class _CategoryListState extends State<CategoryList> {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
-            ElevatedButton.icon(
+            PrimaryButton(
+              label: 'Reintentar',
+              icon: Icons.refresh,
               onPressed: _loadCategories,
-              icon: const Icon(Icons.refresh),
-              label: const Text('Reintentar'),
             ),
           ],
         ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pablito_ds/pablito_ds.dart';
 import '../../core/di/injection_container.dart';
 import '../../core/services/cart_service.dart';
 import '../../core/models/cart_item.dart';
@@ -72,13 +73,17 @@ class _DiscoverPageState extends State<DiscoverPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.error_outline, size: 64, color: Colors.red),
-          const SizedBox(height: 16),
-          Text(_errorMessage!),
-          const SizedBox(height: 16),
-          ElevatedButton(
+          const Icon(Icons.error_outline, size: 64, color: DesignTokens.error),
+          const SizedBox(height: DesignTokens.spacingLG),
+          BodyText(
+            text: _errorMessage!,
+            size: BodyTextSize.medium,
+          ),
+          const SizedBox(height: DesignTokens.spacingLG),
+          PrimaryButton(
+            label: 'Reintentar',
+            icon: Icons.refresh,
             onPressed: _loadProducts,
-            child: const Text('Reintentar'),
           ),
         ],
       ),
@@ -134,8 +139,8 @@ class _DiscoverPageState extends State<DiscoverPage> {
                     top: 8,
                     child: Container(
                       padding: const EdgeInsets.all(4),
-                      decoration: const BoxDecoration(
-                        color: Colors.red,
+                      decoration: BoxDecoration(
+                        color: DesignTokens.error,
                         shape: BoxShape.circle,
                       ),
                       constraints: const BoxConstraints(
@@ -171,8 +176,8 @@ class _DiscoverPageState extends State<DiscoverPage> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Colors.pink[400]!,
-              Colors.purple[600]!,
+              DesignTokens.primary,
+              DesignTokens.secondary,
             ],
           ),
         ),
@@ -199,8 +204,8 @@ class _DiscoverPageState extends State<DiscoverPage> {
                       'SUMMER SALE',
                       style: TextStyle(
                         color: Colors.white.withValues(alpha: 0.9),
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
+                        fontSize: DesignTokens.fontSizeSM,
+                        fontWeight: DesignTokens.fontWeightSemiBold,
                         letterSpacing: 2,
                       ),
                     ),
@@ -211,8 +216,8 @@ class _DiscoverPageState extends State<DiscoverPage> {
                       '50% Off',
                       style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
+                        fontSize: DesignTokens.fontSizeXXL,
+                        fontWeight: DesignTokens.fontWeightBold,
                       ),
                     ),
                   ),
@@ -222,23 +227,16 @@ class _DiscoverPageState extends State<DiscoverPage> {
                       'Fashion',
                       style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                        fontSize: DesignTokens.fontSizeLG,
+                        fontWeight: DesignTokens.fontWeightBold,
                       ),
                     ),
                   ),
-                  const SizedBox(height: 12),
-                  ElevatedButton(
+                  const SizedBox(height: DesignTokens.spacingMD),
+                  PrimaryButton(
+                    label: 'Shop Now',
                     onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: Colors.pink,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 10,
-                      ),
-                    ),
-                    child: const Text('Shop Now'),
+                    icon: Icons.shopping_bag,
                   ),
                 ],
               ),
@@ -263,7 +261,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
             final category = categories[index];
             final isSelected = _selectedCategory == category;
             return Padding(
-              padding: const EdgeInsets.only(right: 12),
+              padding: const EdgeInsets.only(right: DesignTokens.spacingMD),
               child: FilterChip(
                 label: Text(category),
                 selected: isSelected,
@@ -272,10 +270,10 @@ class _DiscoverPageState extends State<DiscoverPage> {
                     _selectedCategory = category;
                   });
                 },
-                selectedColor: Colors.pink,
+                selectedColor: DesignTokens.primary,
                 labelStyle: TextStyle(
-                  color: isSelected ? Colors.white : Colors.grey[700],
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                  color: isSelected ? DesignTokens.onPrimary : DesignTokens.onSurface,
+                  fontWeight: isSelected ? DesignTokens.fontWeightBold : DesignTokens.fontWeightRegular,
                 ),
               ),
             );
@@ -388,12 +386,10 @@ class _DiscoverPageState extends State<DiscoverPage> {
             // Aquí puedes agregar más opciones de filtro
             const Text('More filter options coming soon...'),
             const SizedBox(height: 20),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Apply Filters'),
-              ),
+            PrimaryButton(
+              label: 'Apply Filters',
+              isFullWidth: true,
+              onPressed: () => Navigator.pop(context),
             ),
           ],
         ),

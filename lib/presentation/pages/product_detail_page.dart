@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pablito_ds/pablito_ds.dart';
 import '../../core/services/cart_service.dart';
 import '../../domain/entities/entities.dart';
 import '../../core/models/cart_item.dart';
@@ -71,8 +72,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   top: 8,
                   child: Container(
                     padding: const EdgeInsets.all(4),
-                    decoration: const BoxDecoration(
-                      color: Colors.red,
+                    decoration: BoxDecoration(
+                      color: DesignTokens.error,
                       shape: BoxShape.circle,
                     ),
                     constraints: const BoxConstraints(
@@ -127,49 +128,16 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           children: [
             Row(
               children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.pink[50],
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    widget.product.category.toUpperCase(),
-                    style: TextStyle(
-                      color: Colors.pink[700],
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                BadgeAtom(
+                  label: widget.product.category.toUpperCase(),
+                  variant: BadgeVariant.primary,
+                  size: BadgeSize.small,
                 ),
                 const Spacer(),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.amber[50],
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(Icons.star, size: 16, color: Colors.amber),
-                      const SizedBox(width: 4),
-                      Text(
-                        '${widget.product.rating.rate} (${widget.product.rating.count})',
-                        style: TextStyle(
-                          color: Colors.amber[900],
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
+                BadgeAtom(
+                  label: '${widget.product.rating.rate} (${widget.product.rating.count})',
+                  variant: BadgeVariant.warning,
+                  size: BadgeSize.small,
                 ),
               ],
             ),
@@ -186,10 +154,10 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               children: [
                 Text(
                   '\$${widget.product.price.toStringAsFixed(2)}',
-                  style: const TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.pink,
+                  style: TextStyle(
+                    fontSize: DesignTokens.fontSizeXXL,
+                    fontWeight: DesignTokens.fontWeightBold,
+                    color: DesignTokens.primary,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -298,7 +266,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               child: IconButton(
                 icon: Icon(
                   _isFavorite ? Icons.favorite : Icons.favorite_border,
-                  color: _isFavorite ? Colors.pink : Colors.grey,
+                  color: _isFavorite ? DesignTokens.primary : Colors.grey,
                 ),
                 onPressed: () {
                   setState(() {
@@ -309,7 +277,10 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: ElevatedButton.icon(
+              child: PrimaryButton(
+                label: 'Add to Cart',
+                icon: Icons.shopping_bag,
+                isFullWidth: true,
                 onPressed: () {
                   _cartService.addItem(
                     CartItem(
@@ -326,11 +297,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     ),
                   );
                 },
-                icon: const Icon(Icons.shopping_bag),
-                label: const Text('Add to Cart'),
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                ),
               ),
             ),
           ],

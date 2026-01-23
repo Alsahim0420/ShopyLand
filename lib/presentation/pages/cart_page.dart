@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pablito_ds/pablito_ds.dart';
 import '../../core/services/cart_service.dart';
 import '../../core/models/cart_item.dart';
 
@@ -47,10 +48,10 @@ class _CartPageState extends State<CartPage> {
               onPressed: () {
                 _showClearCartDialog();
               },
-              child: const Text(
-                'Clear All',
-                style: TextStyle(color: Colors.pink),
-              ),
+                  child: Text(
+                    'Clear All',
+                    style: TextStyle(color: DesignTokens.primary),
+                  ),
             ),
         ],
       ),
@@ -98,11 +99,12 @@ class _CartPageState extends State<CartPage> {
             style: TextStyle(color: Colors.grey[500]),
           ),
           const SizedBox(height: 24),
-          ElevatedButton(
+          PrimaryButton(
+            label: 'Start Shopping',
+            icon: Icons.shopping_bag,
             onPressed: () {
               Navigator.pushReplacementNamed(context, '/home');
             },
-            child: const Text('Start Shopping'),
           ),
         ],
       ),
@@ -167,7 +169,7 @@ class _CartPageState extends State<CartPage> {
             Column(
               children: [
                 IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.pink),
+                  icon: Icon(Icons.delete, color: DesignTokens.primary),
                   onPressed: () {
                     _cartService.removeItem(item.product.id);
                     setState(() {});
@@ -262,31 +264,26 @@ class _CartPageState extends State<CartPage> {
                 ),
                 Text(
                   '\$${total.toStringAsFixed(2)}',
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.pink,
+                  style: TextStyle(
+                    fontSize: DesignTokens.fontSizeLG,
+                    fontWeight: DesignTokens.fontWeightBold,
+                    color: DesignTokens.primary,
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Funcionalidad de checkout en desarrollo'),
-                    ),
-                  );
-                },
-                icon: const Icon(Icons.arrow_forward),
-                label: const Text('Proceed to Checkout'),
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                ),
-              ),
+            PrimaryButton(
+              label: 'Proceed to Checkout',
+              icon: Icons.arrow_forward,
+              isFullWidth: true,
+              onPressed: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Funcionalidad de checkout en desarrollo'),
+                  ),
+                );
+              },
             ),
           ],
         ),
@@ -311,9 +308,9 @@ class _CartPageState extends State<CartPage> {
               Navigator.pop(context);
               setState(() {});
             },
-            child: const Text(
+            child: Text(
               'Clear',
-              style: TextStyle(color: Colors.red),
+              style: TextStyle(color: DesignTokens.error),
             ),
           ),
         ],

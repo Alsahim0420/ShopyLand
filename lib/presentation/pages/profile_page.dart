@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pablito_ds/pablito_ds.dart';
 import '../../core/auth/auth_service.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -27,11 +28,11 @@ class ProfilePage extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 50,
-                  backgroundColor: Colors.pink[100],
-                  child: const Icon(
+                  backgroundColor: DesignTokens.primary.withValues(alpha: 0.1),
+                  child: Icon(
                     Icons.person,
                     size: 50,
-                    color: Colors.pink,
+                    color: DesignTokens.primary,
                   ),
                 ),
                 Positioned(
@@ -39,14 +40,14 @@ class ProfilePage extends StatelessWidget {
                   right: 0,
                   child: Container(
                     padding: const EdgeInsets.all(4),
-                    decoration: const BoxDecoration(
-                      color: Colors.pink,
+                    decoration: BoxDecoration(
+                      color: DesignTokens.primary,
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
                       Icons.edit,
                       size: 16,
-                      color: Colors.white,
+                      color: DesignTokens.onPrimary,
                     ),
                   ),
                 ),
@@ -134,13 +135,13 @@ class ProfilePage extends StatelessWidget {
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
             color: isDestructive
-                ? Colors.red[50]
-                : Colors.pink[50],
+                ? DesignTokens.error.withValues(alpha: 0.1)
+                : DesignTokens.primary.withValues(alpha: 0.1),
             shape: BoxShape.circle,
           ),
           child: Icon(
             icon,
-            color: isDestructive ? Colors.red : Colors.pink,
+            color: isDestructive ? DesignTokens.error : DesignTokens.primary,
           ),
         ),
         title: Text(
@@ -178,9 +179,9 @@ class ProfilePage extends StatelessWidget {
                 (route) => false,
               );
             },
-            child: const Text(
+            child: Text(
               'Logout',
-              style: TextStyle(color: Colors.red),
+              style: TextStyle(color: DesignTokens.error),
             ),
           ),
         ],

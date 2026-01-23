@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pablito_ds/pablito_ds.dart';
 import '../../core/di/injection_container.dart';
 import '../widgets/product_list.dart';
 import '../widgets/category_list.dart';
@@ -9,6 +10,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     // Inyección de dependencias centralizada
     final container = InjectionContainer();
 
@@ -17,11 +19,11 @@ class HomePage extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           elevation: 0,
-          title: const Row(
+          title: Row(
             children: [
-              Icon(Icons.shopping_cart, color: Colors.white),
-              SizedBox(width: 8),
-              Text(
+              Icon(Icons.shopping_cart, color: cs.onPrimary),
+              const SizedBox(width: DesignTokens.spacingSM),
+              const Text(
                 'ShopyLand',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
@@ -33,13 +35,13 @@ class HomePage extends StatelessWidget {
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(50),
             child: Container(
-              color: Colors.white,
-              child: const TabBar(
-                indicatorColor: Colors.blue,
+              color: cs.surface,
+              child: TabBar(
+                indicatorColor: cs.primary,
                 indicatorWeight: 3,
-                labelColor: Colors.blue,
+                labelColor: cs.primary,
                 unselectedLabelColor: Colors.grey,
-                tabs: [
+                tabs: const [
                   Tab(
                     icon: Icon(Icons.shopping_bag),
                     text: 'Productos',
@@ -63,8 +65,8 @@ class HomePage extends StatelessWidget {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                Colors.blue[50]!.withValues(alpha: 0.3),
-                Colors.white,
+                cs.primary.withValues(alpha: 0.05),
+                cs.surface,
               ],
             ),
           ),
