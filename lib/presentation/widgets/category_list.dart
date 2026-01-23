@@ -40,10 +40,41 @@ class _CategoryListState extends State<CategoryList> {
     );
   }
 
+  IconData _getCategoryIcon(String categoryName) {
+    final name = categoryName.toLowerCase();
+    if (name.contains('electronics')) return Icons.devices;
+    if (name.contains('jewelery') || name.contains('jewelry')) {
+      return Icons.diamond;
+    }
+    if (name.contains('men')) return Icons.male;
+    if (name.contains('women')) return Icons.female;
+    return Icons.category;
+  }
+
+  Color _getCategoryColor(String categoryName) {
+    final name = categoryName.toLowerCase();
+    if (name.contains('electronics')) return Colors.blue;
+    if (name.contains('jewelery') || name.contains('jewelry')) {
+      return Colors.purple;
+    }
+    if (name.contains('men')) return Colors.blueGrey;
+    if (name.contains('women')) return Colors.pink;
+    return Colors.grey;
+  }
+
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(height: 16),
+            Text('Cargando categorías...'),
+          ],
+        ),
+      );
     }
 
     if (errorMessage != null) {
@@ -53,11 +84,16 @@ class _CategoryListState extends State<CategoryList> {
           children: [
             const Icon(Icons.error_outline, size: 64, color: Colors.red),
             const SizedBox(height: 16),
-            Text('Error: $errorMessage'),
+            Text(
+              'Error: $errorMessage',
+              style: const TextStyle(fontSize: 16),
+              textAlign: TextAlign.center,
+            ),
             const SizedBox(height: 16),
-            ElevatedButton(
+            ElevatedButton.icon(
               onPressed: _loadCategories,
-              child: const Text('Reintentar'),
+              icon: const Icon(Icons.refresh),
+              label: const Text('Reintentar'),
             ),
           ],
         ),
@@ -65,23 +101,96 @@ class _CategoryListState extends State<CategoryList> {
     }
 
     if (categories == null || categories!.isEmpty) {
-      return const Center(child: Text('No hay categorías disponibles'));
+      return const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.category_outlined, size: 64, color: Colors.grey),
+            SizedBox(height: 16),
+            Text(
+              'No hay categorías disponibles',
+              style: TextStyle(fontSize: 16, color: Colors.grey),
+            ),
+          ],
+        ),
+      );
     }
 
-    return ListView.builder(
-      padding: const EdgeInsets.all(8),
+    return GridView.builder(
+      padding: const EdgeInsets.all(16),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: 1.2,
+        crossAxisSpacing: 16,
+        mainAxisSpacing: 16,
+      ),
       itemCount: categories!.length,
       itemBuilder: (context, index) {
         final category = categories![index];
+        final icon = _getCategoryIcon(category.name);
+        final color = _getCategoryColor(category.name);
+
         return Card(
-          margin: const EdgeInsets.symmetric(vertical: 4),
-          child: ListTile(
-            leading: const Icon(Icons.category, color: Colors.blue),
-            title: Text(
-              category.name,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: InkWell(
+            onTap: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Categoría: ${category.name}'),
+                  duration: const Duration(seconds: 2),
+                ),
+              );
+            },
+            borderRadius: BorderRadius.circular(16),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    color.withValues(alpha: 0.8),
+                    color.withValues(alpha: 0.6),
+                  ],
+                ),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      icon,
+                      size: 48,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Text(
+                      category.name.toUpperCase(),
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.2,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
             ),
-            trailing: const Icon(Icons.chevron_right),
           ),
         );
       },

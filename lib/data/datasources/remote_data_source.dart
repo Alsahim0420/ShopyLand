@@ -1,5 +1,4 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:conectify/conectify.dart';
 import '../models/models.dart';
 
 /// Excepciones personalizadas para la capa de datos
@@ -31,33 +30,26 @@ abstract class RemoteDataSource {
 
 class RemoteDataSourceImpl implements RemoteDataSource {
   static const String baseUrl = 'https://fakestoreapi.com';
-  final http.Client client;
+  final ConectifyClient client;
 
-  RemoteDataSourceImpl({http.Client? client})
-    : client = client ?? http.Client();
+  RemoteDataSourceImpl({ConectifyClient? client})
+      : client = client ??
+            ConectifyClient(
+              baseUrl: baseUrl,
+            );
 
   @override
   Future<List<ProductModel>> getProducts() async {
     try {
-      final uri = Uri.parse('$baseUrl/products');
-      final response = await client.get(uri);
-
-      if (response.statusCode == 200) {
-        try {
-          final List<dynamic> jsonList = json.decode(response.body);
-          return jsonList
-              .map(
-                (json) => ProductModel.fromJson(json as Map<String, dynamic>),
-              )
-              .toList();
-        } catch (e) {
-          throw ParsingException('Error al parsear productos: $e');
-        }
-      } else {
-        throw ServerException(
-          'Error al obtener productos',
-          response.statusCode,
-        );
+      final List<dynamic> jsonList = await client.getList('/products');
+      try {
+        return jsonList
+            .map(
+              (json) => ProductModel.fromJson(json as Map<String, dynamic>),
+            )
+            .toList();
+      } catch (e) {
+        throw ParsingException('Error al parsear productos: $e');
       }
     } on ServerException {
       rethrow;
@@ -71,21 +63,12 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   @override
   Future<List<CategoryModel>> getCategories() async {
     try {
-      final uri = Uri.parse('$baseUrl/products/categories');
-      final response = await client.get(uri);
-
-      if (response.statusCode == 200) {
-        try {
-          final List<dynamic> jsonList = json.decode(response.body);
-          return jsonList.map((json) => CategoryModel.fromJson(json)).toList();
-        } catch (e) {
-          throw ParsingException('Error al parsear categorías: $e');
-        }
-      } else {
-        throw ServerException(
-          'Error al obtener categorías',
-          response.statusCode,
-        );
+      final List<dynamic> jsonList =
+          await client.getList('/products/categories');
+      try {
+        return jsonList.map((json) => CategoryModel.fromJson(json)).toList();
+      } catch (e) {
+        throw ParsingException('Error al parsear categorías: $e');
       }
     } on ServerException {
       rethrow;
@@ -99,20 +82,13 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   @override
   Future<List<UserModel>> getUsers() async {
     try {
-      final uri = Uri.parse('$baseUrl/users');
-      final response = await client.get(uri);
-
-      if (response.statusCode == 200) {
-        try {
-          final List<dynamic> jsonList = json.decode(response.body);
-          return jsonList
-              .map((json) => UserModel.fromJson(json as Map<String, dynamic>))
-              .toList();
-        } catch (e) {
-          throw ParsingException('Error al parsear usuarios: $e');
-        }
-      } else {
-        throw ServerException('Error al obtener usuarios', response.statusCode);
+      final List<dynamic> jsonList = await client.getList('/users');
+      try {
+        return jsonList
+            .map((json) => UserModel.fromJson(json as Map<String, dynamic>))
+            .toList();
+      } catch (e) {
+        throw ParsingException('Error al parsear usuarios: $e');
       }
     } on ServerException {
       rethrow;
