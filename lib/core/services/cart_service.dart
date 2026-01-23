@@ -1,7 +1,8 @@
+import 'package:flutter/foundation.dart';
 import '../models/cart_item.dart';
 
 /// Servicio para manejar el carrito de compras
-class CartService {
+class CartService extends ChangeNotifier {
   static final CartService _instance = CartService._internal();
   factory CartService() => _instance;
   CartService._internal();
@@ -26,10 +27,12 @@ class CartService {
     } else {
       _items.add(item);
     }
+    notifyListeners();
   }
 
   void removeItem(int productId) {
     _items.removeWhere((item) => item.product.id == productId);
+    notifyListeners();
   }
 
   void updateQuantity(int productId, int quantity) {
@@ -40,11 +43,13 @@ class CartService {
       } else {
         _items[index].quantity = quantity;
       }
+      notifyListeners();
     }
   }
 
   void clear() {
     _items.clear();
+    notifyListeners();
   }
 
   bool isInCart(int productId) {
@@ -52,6 +57,7 @@ class CartService {
   }
 
   int getQuantity(int productId) {
+    if (_items.isEmpty) return 0;
     final item = _items.firstWhere(
       (item) => item.product.id == productId,
       orElse: () => CartItem(product: _items.first.product, quantity: 0),

@@ -13,6 +13,25 @@ class _CartPageState extends State<CartPage> {
   final CartService _cartService = CartService();
 
   @override
+  void initState() {
+    super.initState();
+    // Escuchar cambios en el carrito
+    _cartService.addListener(_onCartChanged);
+  }
+
+  @override
+  void dispose() {
+    _cartService.removeListener(_onCartChanged);
+    super.dispose();
+  }
+
+  void _onCartChanged() {
+    setState(() {
+      // Actualizar cuando cambia el carrito
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final items = _cartService.items;
     final subtotal = _cartService.totalPrice;

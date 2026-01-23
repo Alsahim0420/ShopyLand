@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'core/auth/auth_service.dart';
 import 'presentation/pages/login_page.dart';
+import 'presentation/pages/register_page.dart';
 import 'presentation/pages/main_navigation.dart';
 import 'presentation/pages/product_detail_page.dart';
 import 'presentation/pages/support_page.dart';
@@ -49,6 +50,7 @@ class MyApp extends StatelessWidget {
       initialRoute: authService.isAuthenticated ? '/home' : '/login',
       routes: {
         '/login': (context) => const LoginPage(),
+        '/register': (context) => const RegisterPage(),
         '/home': (context) => const MainNavigation(),
         '/discover': (context) => const MainNavigation(),
         '/cart': (context) => const MainNavigation(key: ValueKey('cart')),
