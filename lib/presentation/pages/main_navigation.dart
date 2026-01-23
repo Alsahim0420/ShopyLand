@@ -26,6 +26,9 @@ class _MainNavigationState extends State<MainNavigation> {
   @override
   void initState() {
     super.initState();
+    // Escuchar cambios en el carrito
+    _cartService.addListener(_onCartChanged);
+    
     // Detectar si venimos de una ruta específica
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final route = ModalRoute.of(context);
@@ -40,6 +43,17 @@ class _MainNavigationState extends State<MainNavigation> {
     });
   }
 
+  @override
+  void dispose() {
+    _cartService.removeListener(_onCartChanged);
+    super.dispose();
+  }
+
+  void _onCartChanged() {
+    setState(() {
+      // Forzar actualización del badge del carrito
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
