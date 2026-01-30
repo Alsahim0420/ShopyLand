@@ -74,7 +74,7 @@ Aplicación móvil de e-commerce desarrollada en Flutter que consume la API Fake
 
 1. **Clonar el repositorio**
    ```bash
-   git clone <url-del-repositorio>
+   git clone https://github.com/Alsahim0420/shopyland.git
    cd shopyland
    ```
 
@@ -97,7 +97,7 @@ Aplicación móvil de e-commerce desarrollada en Flutter que consume la API Fake
 
 No se requiere configuración adicional. La aplicación está lista para usar con:
 - API Fake Store: `https://fakestoreapi.com`
-- Credenciales demo: `demo@shopyland.com` / `demo123`
+
 
 ##  Uso
 
@@ -275,27 +275,6 @@ Los errores se manejan con `try/catch` y mensajes al usuario (p. ej. `PabAlert`)
 - Opciones de contacto
 - Banner de Priority Support
 
-##  Capturas de Pantalla
-
-<!-- Aquí se agregarán las imágenes que el usuario proporcione -->
-
-### Login
-![Login Screen](https://res.cloudinary.com/panmecar/image/upload/v1769182495/shopyland/Simulator_Screenshot_-_iPhone_17_Pro_Max_-_2026-01-23_at_10.25.28_dtvodw.png)
-
-### Página Principal
-![Discover Screen](https://res.cloudinary.com/panmecar/image/upload/v1769182493/shopyland/Simulator_Screenshot_-_iPhone_17_Pro_Max_-_2026-01-23_at_10.26.06_ur1cjm.png)
-
-### Búsqueda
-![Search Screen](https://res.cloudinary.com/panmecar/image/upload/v1769182490/shopyland/Simulator_Screenshot_-_iPhone_17_Pro_Max_-_2026-01-23_at_10.26.17_iygsd5.png)
-
-### Detalle de Producto
-![Product Detail](https://res.cloudinary.com/panmecar/image/upload/v1769182488/shopyland/Simulator_Screenshot_-_iPhone_17_Pro_Max_-_2026-01-23_at_10.26.22_c1jlfc.png)
-
-### Carrito
-![Cart Screen](https://res.cloudinary.com/panmecar/image/upload/v1769182486/shopyland/Simulator_Screenshot_-_iPhone_17_Pro_Max_-_2026-01-23_at_10.26.53_qdon9t.png)
-
-### Perfil
-![Profile Screen](https://res.cloudinary.com/panmecar/image/upload/v1769182484/shopyland/Simulator_Screenshot_-_iPhone_17_Pro_Max_-_2026-01-23_at_10.26.55_rybdgz.png)
 
 ##  API Utilizada
 
@@ -329,16 +308,24 @@ Ver `ANALISIS_ARCHITECTURE.md` para:
 
 ##  Testing
 
-Para ejecutar los tests:
+Para ejecutar los tests (unit + smoke):
 
 ```bash
 flutter test
 ```
 
-Los tests incluyen:
-- Tests de integración de API
-- Validación de casos de uso
-- Verificación de modelos
+Para tests con cobertura:
+
+```bash
+flutter test --coverage
+./scripts/run_tests_with_coverage.sh   # genera coverage/html e imprime resumen
+./scripts/check_coverage.sh            # valida cobertura (objetivo ≥80%)
+```
+
+Tests incluidos:
+- **Unit:** `AuthService`, `CartService`, `CartItem` (`test/unit/`)
+- **Smoke:** `test/smoke_test.dart`
+- **Integración:** `integration_test/app_test.dart` (login, registro, navegación). Ejecutar con dispositivo: `flutter test integration_test/app_test.dart -d <deviceId>`
 
 ##  Comandos Útiles
 
