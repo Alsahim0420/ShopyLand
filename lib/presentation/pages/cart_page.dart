@@ -1,319 +1,278 @@
 import 'package:flutter/material.dart';
+import 'package:pablito_ds/pablito_ds.dart';
+
 import '../../core/services/cart_service.dart';
 import '../../core/models/cart_item.dart';
 
 class CartPage extends StatefulWidget {
-  const CartPage({super.key});
+  const CartPage({super.key, this.onOpenCatalog});
+
+  final VoidCallback? onOpenCatalog;
 
   @override
   State<CartPage> createState() => _CartPageState();
 }
 
 class _CartPageState extends State<CartPage> {
-  final CartService _cartService = CartService();
+  final CartService _cart = CartService();
 
   @override
   void initState() {
     super.initState();
-    // Escuchar cambios en el carrito
-    _cartService.addListener(_onCartChanged);
+    _cart.addListener(_onCartChanged);
   }
 
   @override
   void dispose() {
-    _cartService.removeListener(_onCartChanged);
+    _cart.removeListener(_onCartChanged);
     super.dispose();
   }
 
-  void _onCartChanged() {
-    setState(() {
-      // Actualizar cuando cambia el carrito
-    });
-  }
+  void _onCartChanged() => setState(() {});
 
   @override
   Widget build(BuildContext context) {
-    final items = _cartService.items;
-    final subtotal = _cartService.totalPrice;
+    final items = _cart.items;
+    if (items.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(DesignTokens.spacingLG),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              PabIcon(
+                icon: Icons.shopping_cart_outlined,
+                predefinedSize: IconSize.xlarge,
+                color: DesignTokens.secondary,
+              ),
+              const SizedBox(height: DesignTokens.spacingLG),
+              const PabHeading(text: 'Carrito vacío', level: HeadingLevel.h4),
+              const SizedBox(height: DesignTokens.spacingSM),
+              PabBodyText(
+                text: 'Añade productos para continuar',
+                size: BodyTextSize.medium,
+              ),
+              const SizedBox(height: DesignTokens.spacingXL),
+              PabPrimaryButton(
+                label: 'Ver catálogo',
+                onPressed: widget.onOpenCatalog,
+                icon: Icons.shopping_bag,
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    final subtotal = _cart.totalPrice;
     final tax = subtotal * 0.08;
     final total = subtotal + tax;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Cart'),
-        actions: [
-          if (items.isNotEmpty)
-            TextButton(
-              onPressed: () {
-                _showClearCartDialog();
+    return Column(
+      children: [
+        Expanded(
+          child: ListView.builder(
+            padding: const EdgeInsets.all(DesignTokens.spacingMD),
+            itemCount: items.length,
+            itemBuilder: (_, i) => _CartItemRow(
+              item: items[i],
+              onRemove: () {
+                _cart.removeItem(items[i].product.id);
               },
-              child: const Text(
-                'Clear All',
-                style: TextStyle(color: Colors.pink),
-              ),
+              onUpdateQty: (q) {
+                _cart.updateQuantity(items[i].product.id, q);
+              },
             ),
-        ],
-      ),
-      body: items.isEmpty
-          ? _buildEmptyCart()
-          : Column(
+          ),
+        ),
+        Container(
+          padding: const EdgeInsets.all(DesignTokens.spacingMD),
+          decoration: BoxDecoration(
+            color: DesignTokens.surface,
+            border: Border(
+              top: BorderSide(color: DesignTokens.border),
+            ),
+          ),
+          child: SafeArea(
+            child: Column(
               children: [
-                Expanded(
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: items.length,
-                    itemBuilder: (context, index) {
-                      return _buildCartItem(items[index]);
-                    },
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const PabBodyText(text: 'Subtotal', size: BodyTextSize.medium),
+                    PabBodyText(
+                      text: '\$${subtotal.toStringAsFixed(2)}',
+                      size: BodyTextSize.medium,
+                    ),
+                  ],
                 ),
-                _buildOrderSummary(subtotal, tax, total),
-              ],
-            ),
-    );
-  }
-
-  Widget _buildEmptyCart() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.shopping_cart_outlined,
-            size: 100,
-            color: Colors.grey[300],
-          ),
-          const SizedBox(height: 24),
-          Text(
-            'Your cart is empty',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.grey[600],
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Add some products to get started',
-            style: TextStyle(color: Colors.grey[500]),
-          ),
-          const SizedBox(height: 24),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pushReplacementNamed(context, '/home');
-            },
-            child: const Text('Start Shopping'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCartItem(CartItem item) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Image.network(
-                item.product.image,
-                width: 80,
-                height: 80,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    width: 80,
-                    height: 80,
-                    color: Colors.grey[300],
-                    child: const Icon(Icons.image_not_supported),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    item.product.title,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
+                const SizedBox(height: DesignTokens.spacingSM),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    PabBodyText(
+                      text: 'Impuesto (8%)',
+                      size: BodyTextSize.medium,
                     ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    item.product.category,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey[600],
+                    PabBodyText(
+                      text: '\$${tax.toStringAsFixed(2)}',
+                      size: BodyTextSize.medium,
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    '\$${item.product.price.toStringAsFixed(2)}',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Column(
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.pink),
-                  onPressed: () {
-                    _cartService.removeItem(item.product.id);
-                    setState(() {});
-                  },
+                  ],
                 ),
-                Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey[300]!),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.remove, size: 18),
-                        onPressed: item.quantity > 1
-                            ? () {
-                                _cartService.updateQuantity(
-                                  item.product.id,
-                                  item.quantity - 1,
-                                );
-                                setState(() {});
-                              }
-                            : null,
-                      ),
-                      Text(
-                        '${item.quantity}',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.add, size: 18),
+                const PabDivider(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const PabHeading(text: 'Total', level: HeadingLevel.h5),
+                    PabHeading(
+                      text: '\$${total.toStringAsFixed(2)}',
+                      level: HeadingLevel.h5,
+                      color: DesignTokens.primary,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: DesignTokens.spacingMD),
+                Row(
+                  children: [
+                    PabSecondaryButton(
+                      label: 'Vaciar',
+                      onPressed: _showClearDialog,
+                      isFullWidth: false,
+                    ),
+                    const SizedBox(width: DesignTokens.spacingMD),
+                    Expanded(
+                      child: PabPrimaryButton(
+                        label: 'Checkout',
                         onPressed: () {
-                          _cartService.updateQuantity(
-                            item.product.id,
-                            item.quantity + 1,
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Checkout en desarrollo'),
+                            ),
                           );
-                          setState(() {});
                         },
+                        icon: Icons.arrow_forward,
+                        isFullWidth: true,
                       ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildOrderSummary(double subtotal, double tax, double total) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withValues(alpha: 0.2),
-            blurRadius: 10,
-            offset: const Offset(0, -5),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text('Subtotal'),
-                Text('\$${subtotal.toStringAsFixed(2)}'),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text('Tax (8%)'),
-                Text('\$${tax.toStringAsFixed(2)}'),
-              ],
-            ),
-            const Divider(height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Total',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  '\$${total.toStringAsFixed(2)}',
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.pink,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Funcionalidad de checkout en desarrollo'),
                     ),
-                  );
-                },
-                icon: const Icon(Icons.arrow_forward),
-                label: const Text('Proceed to Checkout'),
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  ],
                 ),
-              ),
+              ],
             ),
-          ],
+          ),
         ),
-      ),
+      ],
     );
   }
 
-  void _showClearCartDialog() {
+  void _showClearDialog() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Clear Cart'),
-        content: const Text('Are you sure you want to clear all items from your cart?'),
+      builder: (ctx) => AlertDialog(
+        title: const Text('Vaciar carrito'),
+        content: const Text(
+          '¿Quieres eliminar todos los productos del carrito?',
+        ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancelar'),
           ),
           TextButton(
             onPressed: () {
-              _cartService.clear();
-              Navigator.pop(context);
+              _cart.clear();
+              Navigator.pop(ctx);
               setState(() {});
             },
-            child: const Text(
-              'Clear',
-              style: TextStyle(color: Colors.red),
+            child: const Text('Vaciar', style: TextStyle(color: DesignTokens.error)),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CartItemRow extends StatelessWidget {
+  const _CartItemRow({
+    required this.item,
+    required this.onRemove,
+    required this.onUpdateQty,
+  });
+
+  final CartItem item;
+  final VoidCallback onRemove;
+  final void Function(int) onUpdateQty;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = item.product;
+    return PabCard(
+      padding: const EdgeInsets.all(DesignTokens.spacingSM),
+      content: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(DesignTokens.radiusMD),
+            child: Image.network(
+              p.image,
+              width: 72,
+              height: 72,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => Container(
+                width: 72,
+                height: 72,
+                color: DesignTokens.surfaceVariant,
+                child: const Icon(Icons.image_not_supported),
+              ),
+            ),
+          ),
+          const SizedBox(width: DesignTokens.spacingMD),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                PabBodyText(
+                  text: p.title,
+                  size: BodyTextSize.small,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: DesignTokens.spacingXS),
+                PabBodyText(
+                  text: p.category,
+                  size: BodyTextSize.small,
+                ),
+                const SizedBox(height: DesignTokens.spacingXS),
+                PabHeading(
+                  text: '\$${p.price.toStringAsFixed(2)}',
+                  level: HeadingLevel.h6,
+                  color: DesignTokens.primary,
+                ),
+                const SizedBox(height: DesignTokens.spacingSM),
+                Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.remove, size: 18),
+                      onPressed: item.quantity > 1
+                          ? () => onUpdateQty(item.quantity - 1)
+                          : null,
+                    ),
+                    PabBodyText(
+                      text: '${item.quantity}',
+                      size: BodyTextSize.medium,
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.add, size: 18),
+                      onPressed: () => onUpdateQty(item.quantity + 1),
+                    ),
+                    const Spacer(),
+                    IconButton(
+                      icon: const Icon(Icons.delete_outline),
+                      onPressed: onRemove,
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
         ],

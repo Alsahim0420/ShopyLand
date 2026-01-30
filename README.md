@@ -1,6 +1,6 @@
 #  ShopyLand - E-Commerce Flutter App
 
-Aplicación móvil de e-commerce desarrollada en Flutter que consume la API Fake Store para mostrar productos, categorías y usuarios. Implementa Clean Architecture, manejo de errores con Either, y un diseño moderno y responsive.
+Aplicación móvil de e-commerce desarrollada en Flutter que consume la API Fake Store para mostrar productos, categorías y usuarios. Utiliza el sistema de diseño **Pablito DS** y el paquete **conectify** para la API Fake Store. Diseño moderno y responsive.
 
 ##  Tabla de Contenidos
 
@@ -59,8 +59,8 @@ Aplicación móvil de e-commerce desarrollada en Flutter que consume la API Fake
 
 - **Flutter**: Framework de desarrollo móvil
 - **Dart**: Lenguaje de programación
-- **dartz**: Manejo funcional de errores con Either
-- **conectify**: Cliente HTTP sin dependencias externas (solo dart:io)
+- **conectify**: Paquete que consume la API Fake Store (productos, categorías, usuarios)
+- **pablito_ds**: Sistema de diseño (Pablito DS)
 - **Material Design 3**: Sistema de diseño moderno
 
 ##  Requisitos
@@ -217,16 +217,7 @@ La aplicación sigue los principios de **Clean Architecture** con separación cl
 
 ### Manejo de Errores
 
-Utiliza `Either<Failure, T>` de la biblioteca `dartz`:
-- **Left**: Representa un error (Failure)
-- **Right**: Representa éxito (datos)
-
-```dart
-result.fold(
-  (failure) => // Manejo de error
-  (data) => // Manejo de éxito
-);
-```
+Los errores se manejan con `try/catch` y mensajes al usuario (p. ej. `PabAlert`). Los datos se obtienen mediante el paquete **conectify**.
 
 ##  Funcionalidades Detalladas
 

@@ -1,62 +1,45 @@
 import 'package:flutter/material.dart';
-import 'core/auth/auth_service.dart';
+import 'package:flutter/services.dart';
+import 'package:pablito_ds/pablito_ds.dart';
+import 'package:conectify/conectify.dart';
+
+import 'core/services/auth_service.dart';
 import 'presentation/pages/login_page.dart';
 import 'presentation/pages/register_page.dart';
 import 'presentation/pages/main_navigation.dart';
 import 'presentation/pages/product_detail_page.dart';
 import 'presentation/pages/support_page.dart';
-import 'domain/entities/entities.dart';
 
 void main() {
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+      statusBarBrightness: Brightness.light,
+    ),
+  );
+  runApp(const ShopyLandApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class ShopyLandApp extends StatelessWidget {
+  const ShopyLandApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final authService = AuthService();
-    
+    final auth = AuthService();
     return MaterialApp(
       title: 'ShopyLand',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.pink,
-          brightness: Brightness.light,
-        ),
-        useMaterial3: true,
-        cardTheme: CardThemeData(
-          elevation: 2,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
-        appBarTheme: const AppBarTheme(
-          centerTitle: false,
-          elevation: 0,
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.pink,
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-        ),
-      ),
-      initialRoute: authService.isAuthenticated ? '/home' : '/login',
+      theme: DesignTheme.lightTheme,
+      initialRoute: auth.isAuthenticated ? '/home' : '/login',
       routes: {
-        '/login': (context) => const LoginPage(),
-        '/register': (context) => const RegisterPage(),
-        '/home': (context) => const MainNavigation(),
-        '/discover': (context) => const MainNavigation(),
-        '/cart': (context) => const MainNavigation(key: ValueKey('cart')),
-        '/support': (context) => const SupportPage(),
-        '/product-detail': (context) {
-          final product = ModalRoute.of(context)!.settings.arguments as ProductEntity;
+        '/login': (_) => const LoginPage(),
+        '/register': (_) => const RegisterPage(),
+        '/home': (_) => const MainNavigation(),
+        '/support': (_) => const SupportPage(),
+        '/product-detail': (ctx) {
+          final product = ModalRoute.of(ctx)!.settings.arguments! as Product;
           return ProductDetailPage(product: product);
         },
       },
