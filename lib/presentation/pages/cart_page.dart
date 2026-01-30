@@ -89,9 +89,7 @@ class _CartPageState extends State<CartPage> {
           padding: const EdgeInsets.all(DesignTokens.spacingMD),
           decoration: BoxDecoration(
             color: DesignTokens.surface,
-            border: Border(
-              top: BorderSide(color: DesignTokens.border),
-            ),
+            border: Border(top: BorderSide(color: DesignTokens.border)),
           ),
           child: SafeArea(
             child: Column(
@@ -99,7 +97,10 @@ class _CartPageState extends State<CartPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const PabBodyText(text: 'Subtotal', size: BodyTextSize.medium),
+                    const PabBodyText(
+                      text: 'Subtotal',
+                      size: BodyTextSize.medium,
+                    ),
                     PabBodyText(
                       text: '\$${subtotal.toStringAsFixed(2)}',
                       size: BodyTextSize.medium,
@@ -146,8 +147,11 @@ class _CartPageState extends State<CartPage> {
                         label: 'Checkout',
                         onPressed: () {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Checkout en desarrollo'),
+                            SnackBar(
+                              content: PabBodyText(
+                                text: 'Checkout en desarrollo',
+                                size: BodyTextSize.medium,
+                              ),
                             ),
                           );
                         },
@@ -169,22 +173,21 @@ class _CartPageState extends State<CartPage> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Vaciar carrito'),
-        content: const Text(
-          '¿Quieres eliminar todos los productos del carrito?',
+        title: const PabHeading(text: 'Vaciar carrito', level: HeadingLevel.h5),
+        content: const PabBodyText(
+          text: '¿Quieres eliminar todos los productos del carrito?',
+          size: BodyTextSize.medium,
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancelar'),
-          ),
-          TextButton(
+          PabTextButton(label: 'Cancelar', onPressed: () => Navigator.pop(ctx)),
+          PabTextButton(
+            label: 'Vaciar',
             onPressed: () {
               _cart.clear();
               Navigator.pop(ctx);
               setState(() {});
             },
-            child: const Text('Vaciar', style: TextStyle(color: DesignTokens.error)),
+            textColor: DesignTokens.error,
           ),
         ],
       ),
@@ -222,7 +225,10 @@ class _CartItemRow extends StatelessWidget {
                 width: 72,
                 height: 72,
                 color: DesignTokens.surfaceVariant,
-                child: const Icon(Icons.image_not_supported),
+                child: const PabIcon(
+                  icon: Icons.image_not_supported,
+                  predefinedSize: IconSize.large,
+                ),
               ),
             ),
           ),
@@ -238,10 +244,7 @@ class _CartItemRow extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: DesignTokens.spacingXS),
-                PabBodyText(
-                  text: p.category,
-                  size: BodyTextSize.small,
-                ),
+                PabBodyText(text: p.category, size: BodyTextSize.small),
                 const SizedBox(height: DesignTokens.spacingXS),
                 PabHeading(
                   text: '\$${p.price.toStringAsFixed(2)}',
@@ -252,7 +255,10 @@ class _CartItemRow extends StatelessWidget {
                 Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.remove, size: 18),
+                      icon: const PabIcon(
+                        icon: Icons.remove,
+                        predefinedSize: IconSize.small,
+                      ),
                       onPressed: item.quantity > 1
                           ? () => onUpdateQty(item.quantity - 1)
                           : null,
@@ -262,12 +268,15 @@ class _CartItemRow extends StatelessWidget {
                       size: BodyTextSize.medium,
                     ),
                     IconButton(
-                      icon: const Icon(Icons.add, size: 18),
+                      icon: const PabIcon(
+                        icon: Icons.add,
+                        predefinedSize: IconSize.small,
+                      ),
                       onPressed: () => onUpdateQty(item.quantity + 1),
                     ),
                     const Spacer(),
                     IconButton(
-                      icon: const Icon(Icons.delete_outline),
+                      icon: const PabIcon(icon: Icons.delete_outline),
                       onPressed: onRemove,
                     ),
                   ],

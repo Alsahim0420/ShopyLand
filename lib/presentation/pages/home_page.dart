@@ -44,7 +44,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     if (_loading) {
-      return const Center(
+      return Center(
         child: CircularProgressIndicator(color: DesignTokens.primary),
       );
     }
@@ -172,7 +172,10 @@ class _ProductTile extends StatelessWidget {
               errorBuilder: (_, __, ___) => Container(
                 height: 120,
                 color: DesignTokens.surfaceVariant,
-                child: const Icon(Icons.image_not_supported),
+                child: const PabIcon(
+                  icon: Icons.image_not_supported,
+                  predefinedSize: IconSize.large,
+                ),
               ),
             ),
           ),

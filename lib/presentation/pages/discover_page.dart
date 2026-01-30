@@ -50,14 +50,16 @@ class _DiscoverPageState extends State<DiscoverPage> {
   List<Product> get _filtered {
     if (_selectedCategory == 'all') return _products;
     return _products
-        .where((p) => p.category.toLowerCase() == _selectedCategory.toLowerCase())
+        .where(
+          (p) => p.category.toLowerCase() == _selectedCategory.toLowerCase(),
+        )
         .toList();
   }
 
   @override
   Widget build(BuildContext context) {
     if (_loading) {
-      return const Center(
+      return Center(
         child: CircularProgressIndicator(color: DesignTokens.primary),
       );
     }
@@ -107,8 +109,9 @@ class _DiscoverPageState extends State<DiscoverPage> {
                     (c) => _CategoryChip(
                       label: c.name,
                       selected: _selectedCategory == c.name.toLowerCase(),
-                      onTap: () =>
-                          setState(() => _selectedCategory = c.name.toLowerCase()),
+                      onTap: () => setState(
+                        () => _selectedCategory = c.name.toLowerCase(),
+                      ),
                     ),
                   ),
                 ],
@@ -137,8 +140,9 @@ class _DiscoverPageState extends State<DiscoverPage> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         ClipRRect(
-                          borderRadius:
-                              BorderRadius.circular(DesignTokens.radiusMD),
+                          borderRadius: BorderRadius.circular(
+                            DesignTokens.radiusMD,
+                          ),
                           child: Image.network(
                             p.image,
                             height: 120,
@@ -146,7 +150,10 @@ class _DiscoverPageState extends State<DiscoverPage> {
                             errorBuilder: (_, __, ___) => Container(
                               height: 120,
                               color: DesignTokens.surfaceVariant,
-                              child: const Icon(Icons.image_not_supported),
+                              child: const PabIcon(
+                                icon: Icons.image_not_supported,
+                                predefinedSize: IconSize.large,
+                              ),
                             ),
                           ),
                         ),
@@ -167,13 +174,19 @@ class _DiscoverPageState extends State<DiscoverPage> {
                               color: DesignTokens.primary,
                             ),
                             IconButton(
-                              icon: const Icon(Icons.add_shopping_cart),
+                              icon: const PabIcon(
+                                icon: Icons.add_shopping_cart,
+                                predefinedSize: IconSize.medium,
+                              ),
                               onPressed: () {
                                 _cart.addItem(CartItem(product: p));
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Añadido al carrito'),
-                                    duration: Duration(seconds: 1),
+                                  SnackBar(
+                                    content: PabBodyText(
+                                      text: 'Añadido al carrito',
+                                      size: BodyTextSize.medium,
+                                    ),
+                                    duration: const Duration(seconds: 1),
                                   ),
                                 );
                                 setState(() {});
@@ -220,16 +233,13 @@ class _CategoryChip extends StatelessWidget {
             color: selected
                 ? DesignTokens.primary
                 : DesignTokens.surfaceVariant,
-            borderRadius:
-                BorderRadius.circular(DesignTokens.radiusFull),
+            borderRadius: BorderRadius.circular(DesignTokens.radiusFull),
           ),
           child: Center(
             child: PabBodyText(
               text: label,
               size: BodyTextSize.small,
-              color: selected
-                  ? DesignTokens.onPrimary
-                  : DesignTokens.onSurface,
+              color: selected ? DesignTokens.onPrimary : DesignTokens.onSurface,
             ),
           ),
         ),

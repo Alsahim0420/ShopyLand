@@ -36,7 +36,10 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               errorBuilder: (_, __, ___) => Container(
                 height: 280,
                 color: DesignTokens.surfaceVariant,
-                child: const Icon(Icons.image_not_supported, size: 64),
+                child: const PabIcon(
+                  icon: Icons.image_not_supported,
+                  predefinedSize: IconSize.xlarge,
+                ),
               ),
             ),
           ),
@@ -67,22 +70,25 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           const SizedBox(height: DesignTokens.spacingLG),
           const PabHeading(text: 'Descripción', level: HeadingLevel.h5),
           const SizedBox(height: DesignTokens.spacingSM),
-          PabBodyText(
-            text: p.description,
-            size: BodyTextSize.medium,
-          ),
+          PabBodyText(text: p.description, size: BodyTextSize.medium),
           const SizedBox(height: DesignTokens.spacingXL),
           Row(
             children: [
               const PabBodyText(text: 'Cantidad:', size: BodyTextSize.medium),
               const SizedBox(width: DesignTokens.spacingMD),
               IconButton(
-                icon: const Icon(Icons.remove),
+                icon: const PabIcon(
+                  icon: Icons.remove,
+                  predefinedSize: IconSize.medium,
+                ),
                 onPressed: _qty > 1 ? () => setState(() => _qty--) : null,
               ),
               PabBodyText(text: '$_qty', size: BodyTextSize.medium),
               IconButton(
-                icon: const Icon(Icons.add),
+                icon: const PabIcon(
+                  icon: Icons.add,
+                  predefinedSize: IconSize.medium,
+                ),
                 onPressed: () => setState(() => _qty++),
               ),
             ],
@@ -93,7 +99,12 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             onPressed: () {
               _cart.addItem(CartItem(product: p, quantity: _qty));
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('${p.title} añadido al carrito')),
+                SnackBar(
+                  content: PabBodyText(
+                    text: '${p.title} añadido al carrito',
+                    size: BodyTextSize.medium,
+                  ),
+                ),
               );
             },
             icon: Icons.add_shopping_cart,

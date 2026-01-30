@@ -34,7 +34,10 @@ class _RegisterPageState extends State<RegisterPage> {
       return;
     }
     setState(() => _loading = true);
-    final result = await AuthService().login(_email.text.trim(), _password.text);
+    final result = await AuthService().login(
+      _email.text.trim(),
+      _password.text,
+    );
     setState(() => _loading = false);
     if (!mounted) return;
     if (result.success) {
@@ -49,80 +52,73 @@ class _RegisterPageState extends State<RegisterPage> {
     return PabAuthLayout(
       title: 'Crear cuenta',
       subtitle: 'Regístrate en ShopyLand',
-      child: Form(
-        key: _formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (_error != null) ...[
-              PabAlert(
-                message: _error!,
-                variant: AlertVariant.error,
-                onClose: () => setState(() => _error = null),
-              ),
-              const SizedBox(height: DesignTokens.spacingMD),
-            ],
-            PabFormFieldGroup(
-              label: 'Correo',
-              fields: [
-                PabTextInput(
-                  controller: _email,
-                  hint: 'tu@email.com',
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (v) {
-                    if (v == null || v.isEmpty) return 'Ingresa tu correo';
-                    if (!v.contains('@')) return 'Correo inválido';
-                    return null;
-                  },
-                ),
-              ],
-            ),
-            const SizedBox(height: DesignTokens.spacingLG),
-            PabFormFieldGroup(
-              label: 'Contraseña',
-              fields: [
-                PabTextInput(
-                  controller: _password,
-                  hint: '••••••••',
-                  obscureText: true,
-                  validator: (v) {
-                    if (v == null || v.isEmpty) return 'Ingresa tu contraseña';
-                    if (v.length < 6) return 'Mínimo 6 caracteres';
-                    return null;
-                  },
-                ),
-              ],
-            ),
-            const SizedBox(height: DesignTokens.spacingLG),
-            PabFormFieldGroup(
-              label: 'Confirmar contraseña',
-              fields: [
-                PabTextInput(
-                  controller: _confirm,
-                  hint: '••••••••',
-                  obscureText: true,
-                  validator: (v) {
-                    if (v == null || v.isEmpty) return 'Confirma tu contraseña';
-                    return null;
-                  },
-                ),
-              ],
-            ),
-            const SizedBox(height: DesignTokens.spacingXL),
-            PabPrimaryButton(
-              label: 'Registrarse',
-              onPressed: _submit,
-              isLoading: _loading,
-              isFullWidth: true,
+      child: PabComplexForm(
+        formKey: _formKey,
+        primaryButtonLabel: 'Registrarse',
+        secondaryButtonLabel: 'Ya tengo cuenta',
+        onPrimarySubmit: _submit,
+        onSecondarySubmit: () =>
+            Navigator.pushReplacementNamed(context, '/login'),
+        isLoading: _loading,
+        fields: [
+          if (_error != null) ...[
+            PabAlert(
+              message: _error!,
+              variant: AlertVariant.error,
+              onClose: () => setState(() => _error = null),
             ),
             const SizedBox(height: DesignTokens.spacingMD),
-            PabSecondaryButton(
-              label: 'Ya tengo cuenta',
-              onPressed: () => Navigator.pushReplacementNamed(context, '/login'),
-              isFullWidth: true,
-            ),
           ],
-        ),
+          PabFormFieldGroup(
+            label: 'Correo electrónico',
+            fields: [
+              PabTextInput(
+                controller: _email,
+                hint: 'tu@email.com',
+                keyboardType: TextInputType.emailAddress,
+                validator: (v) {
+                  if (v == null || v.isEmpty)
+                    return 'Por favor ingresa tu correo';
+                  if (!v.contains('@')) return 'Correo inválido';
+                  return null;
+                },
+              ),
+            ],
+          ),
+          const SizedBox(height: DesignTokens.spacingLG),
+          PabFormFieldGroup(
+            label: 'Contraseña',
+            fields: [
+              PabTextInput(
+                controller: _password,
+                hint: '••••••••',
+                obscureText: true,
+                validator: (v) {
+                  if (v == null || v.isEmpty)
+                    return 'Por favor ingresa tu contraseña';
+                  if (v.length < 6)
+                    return 'La contraseña debe tener al menos 6 caracteres';
+                  return null;
+                },
+              ),
+            ],
+          ),
+          const SizedBox(height: DesignTokens.spacingLG),
+          PabFormFieldGroup(
+            label: 'Confirmar contraseña',
+            fields: [
+              PabTextInput(
+                controller: _confirm,
+                hint: '••••••••',
+                obscureText: true,
+                validator: (v) {
+                  if (v == null || v.isEmpty) return 'Confirma tu contraseña';
+                  return null;
+                },
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

@@ -46,65 +46,69 @@ class _LoginPageState extends State<LoginPage> {
     return PabAuthLayout(
       title: 'ShopyLand',
       subtitle: 'Inicia sesión para continuar',
-      child: Form(
-        key: _formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (_error != null) ...[
-              PabAlert(
-                message: _error!,
-                variant: AlertVariant.error,
-                onClose: () => setState(() => _error = null),
-              ),
-              const SizedBox(height: DesignTokens.spacingMD),
-            ],
-            PabFormFieldGroup(
-              label: 'Correo',
-              fields: [
-                PabTextInput(
-                  controller: _email,
-                  hint: 'tu@email.com',
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (v) {
-                    if (v == null || v.isEmpty) return 'Ingresa tu correo';
-                    if (!v.contains('@')) return 'Correo inválido';
-                    return null;
-                  },
-                ),
-              ],
-            ),
-            const SizedBox(height: DesignTokens.spacingLG),
-            PabFormFieldGroup(
-              label: 'Contraseña',
-              fields: [
-                PabTextInput(
-                  controller: _password,
-                  hint: '••••••••',
-                  obscureText: true,
-                  validator: (v) {
-                    if (v == null || v.isEmpty) return 'Ingresa tu contraseña';
-                    if (v.length < 6) return 'Mínimo 6 caracteres';
-                    return null;
-                  },
-                ),
-              ],
-            ),
-            const SizedBox(height: DesignTokens.spacingXL),
-            PabPrimaryButton(
-              label: 'Iniciar sesión',
-              onPressed: _submit,
-              isLoading: _loading,
-              isFullWidth: true,
+      child: PabComplexForm(
+        formKey: _formKey,
+        primaryButtonLabel: 'Iniciar sesión',
+        secondaryButtonLabel: 'Crear cuenta',
+        onPrimarySubmit: _submit,
+        onSecondarySubmit: () => Navigator.pushNamed(context, '/register'),
+        isLoading: _loading,
+        fields: [
+          if (_error != null) ...[
+            PabAlert(
+              message: _error!,
+              variant: AlertVariant.error,
+              onClose: () => setState(() => _error = null),
             ),
             const SizedBox(height: DesignTokens.spacingMD),
-            PabSecondaryButton(
-              label: 'Crear cuenta',
-              onPressed: () => Navigator.pushNamed(context, '/register'),
-              isFullWidth: true,
-            ),
           ],
-        ),
+          PabFormFieldGroup(
+            label: 'Correo electrónico',
+            fields: [
+              PabTextInput(
+                controller: _email,
+                hint: 'tu@email.com',
+                keyboardType: TextInputType.emailAddress,
+                validator: (v) {
+                  if (v == null || v.isEmpty) {
+                    return 'Por favor ingresa tu correo';
+                  }
+                  if (!v.contains('@')) return 'Correo inválido';
+                  return null;
+                },
+              ),
+            ],
+          ),
+          const SizedBox(height: DesignTokens.spacingLG),
+          PabFormFieldGroup(
+            label: 'Contraseña',
+            fields: [
+              PabTextInput(
+                controller: _password,
+                hint: '••••••••',
+                obscureText: true,
+                validator: (v) {
+                  if (v == null || v.isEmpty) {
+                    return 'Por favor ingresa tu contraseña';
+                  }
+                  if (v.length < 6) {
+                    return 'La contraseña debe tener al menos 6 caracteres';
+                  }
+                  return null;
+                },
+              ),
+            ],
+          ),
+          const SizedBox(height: DesignTokens.spacingMD),
+          Align(
+            alignment: Alignment.centerRight,
+            child: PabBodyText(
+              text: '¿Olvidaste tu contraseña?',
+              size: BodyTextSize.small,
+              color: DesignTokens.primary,
+            ),
+          ),
+        ],
       ),
     );
   }

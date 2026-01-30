@@ -52,61 +52,52 @@ class _MainNavigationState extends State<MainNavigation> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: DesignTokens.background,
-      body: SafeArea(
-        child: Column(
-          children: [
-            PabAppHeader(
-              title: 'ShopyLand',
-              actions: _index != 3
-                  ? [
-                      Stack(
-                        clipBehavior: Clip.none,
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.shopping_cart_outlined),
-                            onPressed: () => setState(() => _index = 3),
+    return PabDashboardLayout(
+      title: 'ShopyLand',
+      currentNavIndex: _index,
+      onNavTap: (i) => setState(() => _index = i),
+      navItems: _navItems,
+      headerActions: _index != 3
+          ? [
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  IconButton(
+                    icon: const PabIcon(
+                      icon: Icons.shopping_cart_outlined,
+                      predefinedSize: IconSize.medium,
+                    ),
+                    onPressed: () => setState(() => _index = 3),
+                  ),
+                  if (_cart.itemCount > 0)
+                    Positioned(
+                      right: 6,
+                      top: 6,
+                      child: Container(
+                        padding: const EdgeInsets.all(DesignTokens.spacingXS),
+                        decoration: const BoxDecoration(
+                          color: DesignTokens.error,
+                          shape: BoxShape.circle,
+                        ),
+                        constraints: const BoxConstraints(
+                          minWidth: 18,
+                          minHeight: 18,
+                        ),
+                        child: Center(
+                          child: PabBodyText(
+                            text: '${_cart.itemCount}',
+                            size: BodyTextSize.small,
+                            color: DesignTokens.onPrimary,
                           ),
-                          if (_cart.itemCount > 0)
-                            Positioned(
-                              right: 6,
-                              top: 6,
-                              child: Container(
-                                padding: const EdgeInsets.all(4),
-                                decoration: const BoxDecoration(
-                                  color: DesignTokens.error,
-                                  shape: BoxShape.circle,
-                                ),
-                                constraints: const BoxConstraints(
-                                  minWidth: 18,
-                                  minHeight: 18,
-                                ),
-                                child: Text(
-                                  '${_cart.itemCount}',
-                                  style: const TextStyle(
-                                    color: DesignTokens.onPrimary,
-                                    fontSize: 10,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            ),
-                        ],
+                        ),
                       ),
-                    ]
-                  : null,
-            ),
-            Expanded(
-              child: IndexedStack(index: _index, children: _pages),
-            ),
-          ],
-        ),
-      ),
-      bottomNavigationBar: PabNavBar(
-        currentIndex: _index,
-        onTap: (i) => setState(() => _index = i),
-        items: _navItems,
+                    ),
+                ],
+              ),
+            ]
+          : null,
+      body: SafeArea(
+        child: IndexedStack(index: _index, children: _pages),
       ),
     );
   }
