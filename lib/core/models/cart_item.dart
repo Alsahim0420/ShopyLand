@@ -1,8 +1,8 @@
-import '../../domain/entities/entities.dart';
+import 'package:conectify/conectify.dart';
 
-/// Modelo para items del carrito
+/// Ítem del carrito. Usa [Product] del paquete conectify.
 class CartItem {
-  final ProductEntity product;
+  final Product product;
   int quantity;
 
   CartItem({
@@ -11,14 +11,4 @@ class CartItem {
   });
 
   double get totalPrice => product.price * quantity;
-
-  CartItem copyWith({
-    ProductEntity? product,
-    int? quantity,
-  }) {
-    return CartItem(
-      product: product ?? this.product,
-      quantity: quantity ?? this.quantity,
-    );
-  }
 }

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:pablito_ds/pablito_ds.dart';
+
 import '../../core/services/cart_service.dart';
+import 'home_page.dart';
 import 'discover_page.dart';
 import 'search_page.dart';
 import 'cart_page.dart';
@@ -13,111 +16,97 @@ class MainNavigation extends StatefulWidget {
 }
 
 class _MainNavigationState extends State<MainNavigation> {
-  int _currentIndex = 0;
-  final CartService _cartService = CartService();
+  int _index = 0;
+  final CartService _cart = CartService();
 
-  final List<Widget> _pages = [
-    const DiscoverPage(),
-    const SearchPage(),
-    const CartPage(),
-    const ProfilePage(),
+  static final _navItems = [
+    PabNavBarItem(icon: Icons.home, label: 'Inicio'),
+    PabNavBarItem(icon: Icons.category, label: 'Catálogo'),
+    PabNavBarItem(icon: Icons.search, label: 'Buscar'),
+    PabNavBarItem(icon: Icons.shopping_cart, label: 'Carrito'),
+    PabNavBarItem(icon: Icons.person, label: 'Perfil'),
   ];
+
+  late final List<Widget> _pages;
 
   @override
   void initState() {
     super.initState();
-    // Escuchar cambios en el carrito
-    _cartService.addListener(_onCartChanged);
-    
-    // Detectar si venimos de una ruta específica
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final route = ModalRoute.of(context);
-      if (route != null && route.settings.arguments != null) {
-        final index = route.settings.arguments as int?;
-        if (index != null && index >= 0 && index < _pages.length) {
-          setState(() {
-            _currentIndex = index;
-          });
-        }
-      }
-    });
+    _pages = [
+      HomePage(onOpenCatalog: () => setState(() => _index = 1)),
+      const DiscoverPage(),
+      const SearchPage(),
+      CartPage(onOpenCatalog: () => setState(() => _index = 1)),
+      const ProfilePage(),
+    ];
+    _cart.addListener(_onCartChanged);
   }
 
   @override
   void dispose() {
-    _cartService.removeListener(_onCartChanged);
+    _cart.removeListener(_onCartChanged);
     super.dispose();
   }
 
-  void _onCartChanged() {
-    setState(() {
-      // Forzar actualización del badge del carrito
-    });
-  }
+  void _onCartChanged() => setState(() {});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _pages,
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.pink,
-        unselectedItemColor: Colors.grey,
-        items: [
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: 'Search',
-          ),
-          BottomNavigationBarItem(
-            icon: Stack(
-              children: [
-                const Icon(Icons.shopping_cart),
-                if (_cartService.itemCount > 0)
-                  Positioned(
-                    right: 0,
-                    top: 0,
-                    child: Container(
-                      padding: const EdgeInsets.all(2),
-                      decoration: const BoxDecoration(
-                        color: Colors.red,
-                        shape: BoxShape.circle,
+      backgroundColor: DesignTokens.background,
+      body: SafeArea(
+        child: Column(
+          children: [
+            PabAppHeader(
+              title: 'ShopyLand',
+              actions: _index != 3
+                  ? [
+                      Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.shopping_cart_outlined),
+                            onPressed: () => setState(() => _index = 3),
+                          ),
+                          if (_cart.itemCount > 0)
+                            Positioned(
+                              right: 6,
+                              top: 6,
+                              child: Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: const BoxDecoration(
+                                  color: DesignTokens.error,
+                                  shape: BoxShape.circle,
+                                ),
+                                constraints: const BoxConstraints(
+                                  minWidth: 18,
+                                  minHeight: 18,
+                                ),
+                                child: Text(
+                                  '${_cart.itemCount}',
+                                  style: const TextStyle(
+                                    color: DesignTokens.onPrimary,
+                                    fontSize: 10,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
-                      constraints: const BoxConstraints(
-                        minWidth: 16,
-                        minHeight: 16,
-                      ),
-                      child: Text(
-                        '${_cartService.itemCount}',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 10,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ),
-              ],
+                    ]
+                  : null,
             ),
-            label: 'Cart',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
+            Expanded(
+              child: IndexedStack(index: _index, children: _pages),
+            ),
+          ],
+        ),
+      ),
+      bottomNavigationBar: PabNavBar(
+        currentIndex: _index,
+        onTap: (i) => setState(() => _index = i),
+        items: _navItems,
       ),
     );
   }

@@ -44,6 +44,8 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-# Test coverage
-coverage/
+# Test coverage (generada por flutter test --coverage y scripts)
+coverage/*
+!coverage/.gitkeep
+!coverage/README.md
 *.lcov

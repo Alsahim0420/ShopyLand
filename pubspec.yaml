@@ -30,14 +30,15 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   conectify:
     git:
       url: https://github.com/Alsahim0420/conectify.git
-  dartz: ^0.10.1
+      ref: main
+  pablito_ds:
+    git:
+      url: https://github.com/Alsahim0420/Pablito_ds.git
+      ref: main
 
 dev_dependencies:
   flutter_test:

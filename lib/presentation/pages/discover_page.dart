@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import '../../core/di/injection_container.dart';
+import 'package:pablito_ds/pablito_ds.dart';
+import 'package:conectify/conectify.dart';
+
 import '../../core/services/cart_service.dart';
 import '../../core/models/cart_item.dart';
-import '../../domain/entities/entities.dart';
-import '../../domain/usecases/usecases.dart';
-import '../widgets/product_card.dart';
 
 class DiscoverPage extends StatefulWidget {
   const DiscoverPage({super.key});
@@ -14,423 +13,225 @@ class DiscoverPage extends StatefulWidget {
 }
 
 class _DiscoverPageState extends State<DiscoverPage> {
-  late final GetProducts _getProducts;
-  final CartService _cartService = CartService();
+  final CartService _cart = CartService();
+  List<Product> _products = [];
+  List<Category> _categories = [];
+  String _selectedCategory = 'all';
+  bool _loading = true;
+  String? _error;
 
   @override
   void initState() {
     super.initState();
-    _getProducts = InjectionContainer().getProducts;
-    _loadProducts();
-  }
-  
-  List<ProductEntity>? _products;
-  String? _errorMessage;
-  bool _isLoading = true;
-  String _selectedCategory = 'All';
-
-
-  Future<void> _loadProducts() async {
-    final result = await _getProducts();
-    result.fold(
-      (failure) {
-        setState(() {
-          _errorMessage = failure.message;
-          _isLoading = false;
-        });
-      },
-      (productsList) {
-        setState(() {
-          _products = productsList;
-          _isLoading = false;
-        });
-      },
-    );
+    _load();
   }
 
-  List<ProductEntity> get _filteredProducts {
-    if (_products == null) return [];
-    if (_selectedCategory == 'All') return _products!;
-    return _products!.where((p) => p.category == _selectedCategory.toLowerCase()).toList();
+  Future<void> _load() async {
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+    try {
+      final prods = await Conectify.getProducts();
+      final cats = await Conectify.getCategories();
+      setState(() {
+        _products = prods;
+        _categories = cats;
+        _loading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _error = e.toString();
+        _loading = false;
+      });
+    }
+  }
+
+  List<Product> get _filtered {
+    if (_selectedCategory == 'all') return _products;
+    return _products
+        .where((p) => p.category.toLowerCase() == _selectedCategory.toLowerCase())
+        .toList();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: _isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : _errorMessage != null
-                ? _buildErrorView()
-                : _buildContent(),
-      ),
-    );
-  }
-
-  Widget _buildErrorView() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.error_outline, size: 64, color: Colors.red),
-          const SizedBox(height: 16),
-          Text(_errorMessage!),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: _loadProducts,
-            child: const Text('Reintentar'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildContent() {
-    return CustomScrollView(
-      slivers: [
-        _buildHeader(),
-        _buildPromoBanner(),
-        _buildCategoryFilters(),
-        _buildSectionTitle(),
-        _buildProductsGrid(),
-      ],
-    );
-  }
-
-  Widget _buildHeader() {
-    return SliverToBoxAdapter(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Discover',
-                  style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'Find your favorite products',
-                  style: TextStyle(color: Colors.grey[600]),
-                ),
-              ],
-            ),
-            Stack(
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.shopping_cart_outlined),
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/home', arguments: 2);
-                  },
-                ),
-                if (_cartService.itemCount > 0)
-                  Positioned(
-                    right: 8,
-                    top: 8,
-                    child: Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: const BoxDecoration(
-                        color: Colors.red,
-                        shape: BoxShape.circle,
-                      ),
-                      constraints: const BoxConstraints(
-                        minWidth: 16,
-                        minHeight: 16,
-                      ),
-                      child: Text(
-                        '${_cartService.itemCount}',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 10,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPromoBanner() {
-    return SliverToBoxAdapter(
-      child: Container(
-        height: 220,
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Colors.pink[400]!,
-              Colors.purple[600]!,
+    if (_loading) {
+      return const Center(
+        child: CircularProgressIndicator(color: DesignTokens.primary),
+      );
+    }
+    if (_error != null) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(DesignTokens.spacingMD),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              PabAlert(
+                message: _error!,
+                variant: AlertVariant.error,
+                onClose: () => setState(() => _error = null),
+              ),
+              const SizedBox(height: DesignTokens.spacingLG),
+              PabPrimaryButton(
+                label: 'Reintentar',
+                onPressed: _load,
+                icon: Icons.refresh,
+              ),
             ],
           ),
         ),
-        child: Stack(
+      );
+    }
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final pad = DesignTokens.spacingMD;
+        final isWide = constraints.maxWidth > 600;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Positioned(
-              right: -50,
-              bottom: -50,
-              child: Icon(
-                Icons.shopping_bag,
-                size: 200,
-                color: Colors.white.withValues(alpha: 0.1),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
+            SizedBox(
+              height: 44,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                padding: EdgeInsets.symmetric(horizontal: pad),
                 children: [
-                  Flexible(
-                    child: Text(
-                      'SUMMER SALE',
-                      style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.9),
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 2,
-                      ),
-                    ),
+                  _CategoryChip(
+                    label: 'Todos',
+                    selected: _selectedCategory == 'all',
+                    onTap: () => setState(() => _selectedCategory = 'all'),
                   ),
-                  const SizedBox(height: 6),
-                  Flexible(
-                    child: Text(
-                      '50% Off',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                      ),
+                  ..._categories.map(
+                    (c) => _CategoryChip(
+                      label: c.name,
+                      selected: _selectedCategory == c.name.toLowerCase(),
+                      onTap: () =>
+                          setState(() => _selectedCategory = c.name.toLowerCase()),
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Flexible(
-                    child: Text(
-                      'Fashion',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: Colors.pink,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 10,
-                      ),
-                    ),
-                    child: const Text('Shop Now'),
                   ),
                 ],
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCategoryFilters() {
-    final categories = ['All', 'Electronics', 'Jewelery', "Men's", "Women's"];
-    
-    return SliverToBoxAdapter(
-      child: SizedBox(
-        height: 50,
-        child: ListView.builder(
-          scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          itemCount: categories.length,
-          itemBuilder: (context, index) {
-            final category = categories[index];
-            final isSelected = _selectedCategory == category;
-            return Padding(
-              padding: const EdgeInsets.only(right: 12),
-              child: FilterChip(
-                label: Text(category),
-                selected: isSelected,
-                onSelected: (selected) {
-                  setState(() {
-                    _selectedCategory = category;
-                  });
+            const SizedBox(height: DesignTokens.spacingMD),
+            Expanded(
+              child: GridView.builder(
+                padding: EdgeInsets.all(pad),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: isWide ? 3 : 2,
+                  childAspectRatio: 0.72,
+                  crossAxisSpacing: pad,
+                  mainAxisSpacing: pad,
+                ),
+                itemCount: _filtered.length,
+                itemBuilder: (_, i) {
+                  final p = _filtered[i];
+                  return PabCard(
+                    onTap: () => Navigator.pushNamed(
+                      context,
+                      '/product-detail',
+                      arguments: p,
+                    ),
+                    content: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        ClipRRect(
+                          borderRadius:
+                              BorderRadius.circular(DesignTokens.radiusMD),
+                          child: Image.network(
+                            p.image,
+                            height: 120,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => Container(
+                              height: 120,
+                              color: DesignTokens.surfaceVariant,
+                              child: const Icon(Icons.image_not_supported),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: DesignTokens.spacingSM),
+                        PabBodyText(
+                          text: p.title,
+                          size: BodyTextSize.small,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: DesignTokens.spacingXS),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            PabHeading(
+                              text: '\$${p.price.toStringAsFixed(2)}',
+                              level: HeadingLevel.h5,
+                              color: DesignTokens.primary,
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.add_shopping_cart),
+                              onPressed: () {
+                                _cart.addItem(CartItem(product: p));
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Añadido al carrito'),
+                                    duration: Duration(seconds: 1),
+                                  ),
+                                );
+                                setState(() {});
+                              },
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  );
                 },
-                selectedColor: Colors.pink,
-                labelStyle: TextStyle(
-                  color: isSelected ? Colors.white : Colors.grey[700],
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                ),
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSectionTitle() {
-    return SliverToBoxAdapter(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              _selectedCategory == 'All' 
-                  ? 'All Products' 
-                  : _selectedCategory,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-            Row(
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.tune),
-                  onPressed: () {
-                    _showFilterDialog(context);
-                  },
-                  tooltip: 'Filter',
-                ),
-                DropdownButton<String>(
-                  value: 'Most Relevant',
-                  items: const [
-                    DropdownMenuItem(
-                      value: 'Most Relevant',
-                      child: Text('Most Relevant'),
-                    ),
-                    DropdownMenuItem(
-                      value: 'Price: Low to High',
-                      child: Text('Price: Low to High'),
-                    ),
-                    DropdownMenuItem(
-                      value: 'Price: High to Low',
-                      child: Text('Price: High to Low'),
-                    ),
-                  ],
-                  onChanged: (value) {
-                    if (value != null) {
-                      _sortProducts(value);
-                    }
-                  },
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _sortProducts(String sortBy) {
-    if (_products == null) return;
-
-    setState(() {
-      switch (sortBy) {
-        case 'Price: Low to High':
-          _products!.sort((a, b) => a.price.compareTo(b.price));
-          break;
-        case 'Price: High to Low':
-          _products!.sort((a, b) => b.price.compareTo(a.price));
-          break;
-        default:
-          // Most Relevant - orden original
-          break;
-      }
-    });
-  }
-
-  void _showFilterDialog(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Filter Products',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              'Price Range',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 12),
-            // Aquí puedes agregar más opciones de filtro
-            const Text('More filter options coming soon...'),
-            const SizedBox(height: 20),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Apply Filters'),
               ),
             ),
           ],
-        ),
-      ),
+        );
+      },
     );
   }
+}
 
-  Widget _buildProductsGrid() {
-    final products = _filteredProducts;
-    
-    return SliverPadding(
-      padding: const EdgeInsets.all(16),
-      sliver: SliverGrid(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          childAspectRatio: 0.7,
-          crossAxisSpacing: 12,
-          mainAxisSpacing: 12,
-        ),
-        delegate: SliverChildBuilderDelegate(
-          (context, index) {
-            final product = products[index];
-            return ProductCard(
-              product: product,
-              onAddToCart: () {
-                _cartService.addItem(CartItem(product: product));
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Producto agregado al carrito'),
-                    duration: Duration(seconds: 1),
-                  ),
-                );
-                setState(() {});
-              },
-            );
-          },
-          childCount: products.length,
+class _CategoryChip extends StatelessWidget {
+  const _CategoryChip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(right: DesignTokens.spacingSM),
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: DesignTokens.spacingMD,
+            vertical: DesignTokens.spacingSM,
+          ),
+          decoration: BoxDecoration(
+            color: selected
+                ? DesignTokens.primary
+                : DesignTokens.surfaceVariant,
+            borderRadius:
+                BorderRadius.circular(DesignTokens.radiusFull),
+          ),
+          child: Center(
+            child: PabBodyText(
+              text: label,
+              size: BodyTextSize.small,
+              color: selected
+                  ? DesignTokens.onPrimary
+                  : DesignTokens.onSurface,
+            ),
+          ),
         ),
       ),
     );

@@ -4,12 +4,17 @@
 
 echo "🧪 Ejecutando tests y generando reporte de cobertura..."
 
-# Limpiar reportes anteriores
-rm -rf coverage/
+# Limpiar reportes anteriores (mantener carpeta coverage/ y .gitkeep)
 rm -f coverage/lcov.info
+rm -rf coverage/html
 
 # Ejecutar tests con cobertura
-flutter test --coverage
+flutter test --coverage || {
+    echo "❌ flutter test --coverage falló. Ejecuta en tu terminal:"
+    echo "   flutter test --coverage"
+    echo "   ./scripts/gen_coverage_html.sh"
+    exit 1
+}
 
 # Verificar si lcov está instalado
 if ! command -v lcov &> /dev/null; then
@@ -32,19 +37,26 @@ if ! command -v lcov &> /dev/null; then
 fi
 
 # Generar reporte HTML con lcov
-if [ -f coverage/lcov.info ]; then
-    echo "📊 Generando reporte HTML..."
-    genhtml coverage/lcov.info -o coverage/html --no-function-coverage --no-branch-coverage
-    
-    # Calcular cobertura total
-    echo ""
-    echo "📈 Resumen de cobertura:"
-    lcov --summary coverage/lcov.info
-    
-    echo ""
-    echo "✅ Reporte HTML generado en: coverage/html/index.html"
-    echo "🌐 Abre el reporte en tu navegador para ver los detalles"
-else
-    echo "❌ No se encontró el archivo coverage/lcov.info"
+if [ ! -f coverage/lcov.info ]; then
+    echo "❌ No se encontró coverage/lcov.info"
     exit 1
+fi
+
+if [ ! -s coverage/lcov.info ]; then
+    echo "❌ coverage/lcov.info está vacío. Ejecuta tests que usen código de lib/ (p. ej. test/unit/)."
+    exit 1
+fi
+
+echo "📊 Generando reporte HTML..."
+genhtml coverage/lcov.info -o coverage/html --no-function-coverage --no-branch-coverage
+
+echo ""
+echo "📈 Resumen de cobertura:"
+lcov --summary coverage/lcov.info
+
+echo ""
+echo "✅ Reporte HTML generado en: coverage/html/index.html"
+echo "🌐 Abre: open coverage/html/index.html"
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    open coverage/html/index.html
 fi

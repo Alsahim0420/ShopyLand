@@ -1,7 +1,8 @@
 import 'package:flutter/foundation.dart';
+
 import '../models/cart_item.dart';
 
-/// Servicio para manejar el carrito de compras
+/// Servicio del carrito. Singleton.
 class CartService extends ChangeNotifier {
   static final CartService _instance = CartService._internal();
   factory CartService() => _instance;
@@ -10,20 +11,15 @@ class CartService extends ChangeNotifier {
   final List<CartItem> _items = [];
 
   List<CartItem> get items => List.unmodifiable(_items);
-
   int get itemCount => _items.length;
 
-  double get totalPrice {
-    return _items.fold(0.0, (sum, item) => sum + item.totalPrice);
-  }
+  double get totalPrice =>
+      _items.fold(0.0, (sum, item) => sum + item.totalPrice);
 
   void addItem(CartItem item) {
-    final existingIndex = _items.indexWhere(
-      (i) => i.product.id == item.product.id,
-    );
-
-    if (existingIndex >= 0) {
-      _items[existingIndex].quantity += item.quantity;
+    final i = _items.indexWhere((e) => e.product.id == item.product.id);
+    if (i >= 0) {
+      _items[i].quantity += item.quantity;
     } else {
       _items.add(item);
     }
@@ -31,20 +27,19 @@ class CartService extends ChangeNotifier {
   }
 
   void removeItem(int productId) {
-    _items.removeWhere((item) => item.product.id == productId);
+    _items.removeWhere((e) => e.product.id == productId);
     notifyListeners();
   }
 
   void updateQuantity(int productId, int quantity) {
-    final index = _items.indexWhere((item) => item.product.id == productId);
-    if (index >= 0) {
-      if (quantity <= 0) {
-        _items.removeAt(index);
-      } else {
-        _items[index].quantity = quantity;
-      }
-      notifyListeners();
+    final i = _items.indexWhere((e) => e.product.id == productId);
+    if (i < 0) return;
+    if (quantity <= 0) {
+      _items.removeAt(i);
+    } else {
+      _items[i].quantity = quantity;
     }
+    notifyListeners();
   }
 
   void clear() {
@@ -52,16 +47,11 @@ class CartService extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool isInCart(int productId) {
-    return _items.any((item) => item.product.id == productId);
-  }
+  bool isInCart(int productId) =>
+      _items.any((e) => e.product.id == productId);
 
   int getQuantity(int productId) {
-    if (_items.isEmpty) return 0;
-    final item = _items.firstWhere(
-      (item) => item.product.id == productId,
-      orElse: () => CartItem(product: _items.first.product, quantity: 0),
-    );
-    return item.quantity;
+    final i = _items.indexWhere((e) => e.product.id == productId);
+    return i < 0 ? 0 : _items[i].quantity;
   }
 }
