@@ -14,7 +14,7 @@ Aplicación móvil de e-commerce desarrollada en Flutter que consume la API Fake
 - [Arquitectura](#-arquitectura)
 - [Funcionalidades](#-funcionalidades)
 - [Capturas de Pantalla](#-capturas-de-pantalla)
-- [Resultados de tests](#-resultados-de-tests)
+- [Imagen de los tests](#imagen-de-los-tests)
 - [API Utilizada](#-api-utilizada)
 - [Documentación Adicional](#-documentación-adicional)
 
@@ -328,13 +328,17 @@ Tests incluidos:
 - **Smoke:** `test/smoke_test.dart`
 - **Integración:** `integration_test/app_test.dart` (login, registro, navegación). Ejecutar con dispositivo: `flutter test integration_test/app_test.dart -d <deviceId>`
 
-### Resultados de tests
+### Imagen de los tests
 
-Puedes añadir una captura de pantalla de la salida de tus tests (por ejemplo, tras ejecutar `flutter test` o `flutter test --coverage`). Coloca la imagen en la raíz del proyecto o en una carpeta `docs/` y actualiza la ruta abajo.
+Aquí puedes poner una captura de pantalla con los resultados de los tests (por ejemplo tras ejecutar `flutter test` o `flutter test --coverage`).
 
-![Resultados de tests](https://res.cloudinary.com/panmecar/image/upload/v1769844331/test_fase1/Captura_de_pantalla_2026-01-31_a_la_s_2.25.22_a.m._pyt6yx.png)
+**Cómo usar esta sección:**
+1. Ejecuta los tests y haz una captura de pantalla del resultado.
+2. Guarda la imagen en el repo (por ejemplo en `docs/test-results.png`) o súbela a un hosting (Cloudinary, imgur, etc.).
+3. Sustituye la URL o ruta en la línea de abajo por la de tu imagen.
 
-> **Nota:** Si la imagen está en la raíz, usa por ejemplo: `![Resultados de tests](test-results.png)`
+![Resultados de tests](https://res.cloudinary.com/panmecar/image/upload/v1769847862/test_fase5/Captura_de_pantalla_2026-01-31_a_la_s_3.24.07_a.m._ibggb5.png)
+
 
 ##  Comandos Útiles
 
